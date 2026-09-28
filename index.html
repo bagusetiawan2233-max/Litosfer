@@ -1,0 +1,3172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Edukasi Interaktif Litosfer - Geografi Fase E</title>
+    <!-- Tailwind CSS untuk Desain Modern & Responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #17120f 0%, #29211b 50%, #431407 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            font-weight: 500;
+        }
+        .slide:not(#slide7) h1,
+        .slide:not(#slide7) h2,
+        .slide:not(#slide7) h3,
+        .slide:not(#slide7) h4,
+        .slide:not(#slide7) strong,
+        .slide:not(#slide7) button,
+        .slide:not(#slide7) label {
+            font-weight: 700;
+        }
+        .slide:not(#slide7) h1,
+        .slide:not(#slide7) h2,
+        .slide:not(#slide7) h3,
+        .slide:not(#slide7) h4 {
+            letter-spacing: 0.01em;
+            text-shadow: 1px 2px 0 rgba(28, 25, 23, 0.75), 0 0 12px rgba(251, 146, 60, 0.14);
+        }
+        .slide:not(#slide7) p,
+        .slide:not(#slide7) li,
+        .slide:not(#slide7) span,
+        .slide:not(#slide7) input,
+        .slide:not(#slide7) button {
+            letter-spacing: 0.005em;
+        }
+        .slide:not(#slide7) label,
+        .question-kicker,
+        #questionTypeBadge,
+        #questionCounter,
+        #levelMapHint,
+        #levelProgressText,
+        #questionProgressText {
+            letter-spacing: 0.08em;
+        }
+        .slide:not(#slide7) input,
+        .slide:not(#slide7) button,
+        .slide:not(#slide7) p,
+        .slide:not(#slide7) li {
+            text-shadow: 0 1px 1px rgba(2, 6, 23, 0.45);
+        }
+        .landscape-container {
+            aspect-ratio: 16/9;
+            max-width: 1280px;
+            width: 100%;
+            background-image: linear-gradient(rgba(2, 6, 23, 0.68), rgba(2, 6, 23, 0.78)), url('./assets/Bg.jpg');
+            background-position: center;
+            background-size: cover;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        @media (max-width: 1024px) {
+            body {
+                align-items: stretch;
+                padding: 0;
+            }
+            .landscape-container {
+                aspect-ratio: auto;
+                min-height: 100vh;
+                max-width: none;
+                border-radius: 0;
+            }
+            .slide {
+                min-height: calc(100vh - 58px);
+            }
+            #userStatusBar {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                row-gap: 0.35rem;
+            }
+        }
+        .slide {
+            display: none;
+        }
+        .slide.active {
+            display: flex;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .title-art {
+            width: min(100%, 1500px);
+            margin-top: -58px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 18px 18px rgba(2, 6, 23, 0.5)) drop-shadow(0 0 14px rgba(249, 115, 22, 0.28));
+            animation: titleFloat 3.8s ease-in-out infinite;
+            will-change: transform;
+        }
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(-14px) rotate(-0.5deg) scale(1); filter: drop-shadow(0 18px 18px rgba(2, 6, 23, 0.5)) drop-shadow(0 0 12px rgba(249, 115, 22, 0.25)); }
+            50% { transform: translateY(16px) rotate(0.5deg) scale(1.02); filter: drop-shadow(0 26px 22px rgba(2, 6, 23, 0.55)) drop-shadow(0 0 26px rgba(249, 115, 22, 0.7)); }
+        }
+        .lava-start-button {
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(254, 215, 170, 0.85);
+            background: linear-gradient(115deg, #9a3412, #ea580c 45%, #f59e0b 75%, #c2410c);
+            box-shadow: 0 0 0 3px rgba(124, 45, 18, 0.55), 0 8px 22px rgba(234, 88, 12, 0.45), inset 0 2px 0 rgba(255, 237, 213, 0.45);
+            animation: lavaPulse 2.2s ease-in-out infinite;
+        }
+        .lava-start-button::before {
+            content: "";
+            position: absolute;
+            width: 150%;
+            height: 180%;
+            left: -25%;
+            top: -95%;
+            background: linear-gradient(120deg, transparent 35%, rgba(255, 237, 213, 0.4) 48%, transparent 60%);
+            transform: rotate(-12deg);
+            animation: lavaShine 2.8s linear infinite;
+            pointer-events: none;
+        }
+        .lava-start-button > * {
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes lavaPulse {
+            0%, 100% { transform: translateY(0); box-shadow: 0 0 0 3px rgba(124, 45, 18, 0.55), 0 8px 22px rgba(234, 88, 12, 0.45), inset 0 2px 0 rgba(255, 237, 213, 0.45); }
+            50% { transform: translateY(-3px); box-shadow: 0 0 0 4px rgba(124, 45, 18, 0.5), 0 12px 30px rgba(249, 115, 22, 0.7), inset 0 2px 0 rgba(255, 237, 213, 0.55); }
+        }
+        @keyframes lavaShine {
+            from { transform: translateX(-45%) rotate(-12deg); }
+            to { transform: translateX(45%) rotate(-12deg); }
+        }
+        @media (max-width: 640px) {
+            .title-art {
+                width: min(100%, 560px);
+                margin-top: -18px;
+                animation-duration: 4.6s;
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translateY(60px) scale(0.96); }
+            55% { opacity: 1; }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .portrait-frame {
+            animation: floatUp 1.2s ease-out forwards, gentleBounce 3s ease-in-out infinite 1.2s;
+        }
+        .top-right-logo {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            z-index: 20;
+            width: 68px;
+            height: 68px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.45);
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 10px 26px rgba(2, 6, 23, 0.35);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .top-right-logo img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+        .top-right-logo-label {
+            position: absolute;
+            top: 32px;
+            left: 96px;
+            z-index: 20;
+            font-size: 1.08rem;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            color: #facc15;
+            text-shadow: 0 2px 10px rgba(2, 6, 23, 0.65);
+            white-space: nowrap;
+            line-height: 1.15;
+        }
+        .top-right-logo-subtitle {
+            position: absolute;
+            top: 59px;
+            left: 96px;
+            z-index: 20;
+            font-size: 0.64rem;
+            font-weight: 700;
+            letter-spacing: 0.10em;
+            color: #f8fafc;
+            text-shadow: 0 2px 10px rgba(2, 6, 23, 0.65);
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+        .volume-control {
+            position: absolute;
+            top: 92px;
+            left: 18px;
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            pointer-events: auto;
+        }
+        .volume-toggle {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(15, 23, 42, 0.55);
+            box-shadow: 0 10px 26px rgba(2, 6, 23, 0.35);
+            backdrop-filter: blur(10px);
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        }
+        .volume-toggle:hover {
+            transform: translateY(-1px);
+            border-color: rgba(103, 232, 249, 0.6);
+            background: rgba(15, 23, 42, 0.72);
+        }
+        .volume-panel {
+            display: none;
+            width: 170px;
+            margin-top: 0.55rem;
+            padding: 0.6rem 0.65rem 0.45rem;
+            border-radius: 0.9rem;
+            background: rgba(15, 23, 42, 0.86);
+            border: 1px solid rgba(103, 232, 249, 0.35);
+            box-shadow: 0 18px 32px rgba(2, 6, 23, 0.45);
+            backdrop-filter: blur(10px);
+        }
+        .volume-control.open .volume-panel {
+            display: block;
+        }
+        .volume-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.35rem;
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #d7f9ff;
+        }
+        .volume-slider {
+            width: 100%;
+            accent-color: #fbbf24;
+        }
+        .volume-value {
+            display: block;
+            text-align: center;
+            margin-top: 0.2rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #facc15;
+        }
+        .top-right-logo.hero-logo {
+            width: 88px;
+            height: 88px;
+        }
+        .top-right-logo.hero-logo img {
+            width: 64px;
+            height: 64px;
+        }
+        .adventure-map {
+            position: relative;
+            min-height: 390px;
+            aspect-ratio: 16 / 9;
+            background-image: linear-gradient(180deg, rgba(2, 31, 42, 0.08), rgba(2, 6, 23, 0.1)), url('./assets/Level.jpg');
+            background-position: center;
+            background-size: cover;
+            padding: 0.75rem;
+        }
+        .adventure-map > div:first-child {
+            position: absolute;
+            top: 4%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(58%, 480px);
+            text-align: center;
+            pointer-events: none;
+        }
+        .adventure-map > div:first-child h2 {
+            font-size: clamp(0.8rem, 2.2vw, 1.5rem);
+            text-shadow: 2px 2px 0 #123b3a, 0 2px 8px rgba(0, 0, 0, 0.75);
+        }
+        .adventure-map > div:first-child p,
+        .adventure-map > div:first-child div {
+            display: none;
+        }
+        #levelMap {
+            position: absolute;
+            inset: 0;
+            display: block;
+        }
+        .level-card {
+            position: absolute;
+            min-height: 0;
+            width: 18.5%;
+            height: 24%;
+            padding: 0.5rem;
+            background: rgba(28, 25, 23, 0.22) !important;
+            border: 2px solid rgba(251, 146, 60, 0.48) !important;
+            color: #fff7ed !important;
+            backdrop-filter: blur(3px);
+            box-shadow: 0 5px 12px rgba(2, 6, 23, 0.42), inset 0 0 12px rgba(251, 146, 60, 0.1);
+            transition: transform 0.2s ease, filter 0.2s ease, border-color 0.2s ease;
+        }
+        .level-card:nth-child(1) { left: 4.5%; bottom: 7%; }
+        .level-card:nth-child(2) { left: 24.5%; bottom: 7%; }
+        .level-card:nth-child(3) { left: 43.5%; bottom: 7%; }
+        .level-card:nth-child(4) { left: 62%; bottom: 7%; }
+        .level-card:nth-child(5) { left: 81%; bottom: 7%; }
+        .level-card > * {
+            opacity: 1;
+        }
+        .level-card:not(:disabled):hover {
+            transform: translateY(-4px);
+            filter: brightness(1.12);
+            background: rgba(67, 20, 7, 0.48) !important;
+            border-color: rgba(253, 230, 138, 0.9) !important;
+        }
+        .level-card:disabled {
+            border-color: rgba(120, 113, 108, 0.52) !important;
+            background: rgba(28, 25, 23, 0.2) !important;
+            color: #d6c7bc !important;
+        }
+        .adventure-map .level-card:disabled {
+            background: rgba(28, 25, 23, 0.2) !important;
+        }
+        #slide5 .adventure-map .level-card:disabled,
+        #slide5 .adventure-map .level-card.opacity-75 {
+            background: rgba(28, 25, 23, 0.2) !important;
+        }
+        .volcano-certificate {
+            overflow: hidden;
+            aspect-ratio: auto;
+            min-height: 0;
+            background: linear-gradient(145deg, #1c1917 0%, #431407 52%, #7c2d12 100%) !important;
+            color: #fff7ed !important;
+            border: 4px solid #f97316 !important;
+            box-shadow: 0 0 0 4px rgba(124, 45, 18, 0.55), 0 0 32px rgba(249, 115, 22, 0.42), inset 0 0 35px rgba(251, 146, 60, 0.12) !important;
+            padding: 2rem !important;
+        }
+        .volcano-certificate .certificate-title {
+            display: block;
+        }
+        .volcano-certificate h2,
+        .volcano-certificate h3,
+        .volcano-certificate h4,
+        .volcano-certificate p,
+        .volcano-certificate span,
+        .volcano-certificate strong,
+        .volcano-certificate div {
+            color: #fff7ed !important;
+        }
+        .volcano-certificate .certificate-score-box {
+            background: rgba(67, 20, 7, 0.72) !important;
+            border-color: rgba(251, 146, 60, 0.65) !important;
+        }
+        .volcano-certificate .certificate-score-box .border-l {
+            border-color: rgba(251, 146, 60, 0.45) !important;
+        }
+        .volcano-certificate .certificate-score-box {
+            margin-top: 0.75rem !important;
+            padding: 0.65rem !important;
+        }
+        .volcano-certificate .certificate-score-box span {
+            font-size: 0.85rem;
+        }
+        .volcano-certificate > .my-6 {
+            position: static;
+            margin: 1.5rem 0 !important;
+            text-align: center;
+        }
+        .volcano-certificate > .my-6 > p:first-child {
+            display: block;
+        }
+        .volcano-certificate > .my-6 #certName {
+            color: #3f2418 !important;
+            font-size: 1.45rem !important;
+            line-height: 1.1;
+        }
+        .volcano-certificate > .my-6 #certClassification {
+            color: #9a3412 !important;
+            margin-top: 0.7rem;
+            font-size: 1.05rem !important;
+            line-height: 1.1;
+        }
+        .volcano-certificate > .my-6 #certClassificationDetail {
+            color: #5b3526 !important;
+            margin-top: 0.3rem;
+            font-size: 0.55rem !important;
+            line-height: 1.1;
+        }
+        .volcano-certificate > .my-6 > .flex {
+            display: flex;
+        }
+        .volcano-certificate > .certificate-score-box {
+            position: static;
+            margin: 1rem 0 !important;
+        }
+        .volcano-certificate > .certificate-score-box > div {
+            min-width: 0;
+        }
+        .volcano-certificate > .certificate-score-box span {
+            font-size: 0.58rem !important;
+            line-height: 1.05;
+        }
+        .volcano-certificate > .certificate-score-box #certScore {
+            font-size: 1.15rem !important;
+        }
+        .volcano-certificate > .certificate-score-box .text-lg {
+            font-size: 0.72rem !important;
+        }
+        .volcano-certificate > .flex.justify-between {
+            position: static;
+            padding-top: 1.5rem !important;
+            border-top: 1px solid rgba(251, 146, 60, 0.45) !important;
+            font-size: 0.55rem !important;
+            line-height: 1.05;
+        }
+        .level-card:focus-visible {
+            outline: 3px solid #fbbf24;
+            outline-offset: 3px;
+        }
+        .level-path {
+            display: none;
+        }
+        #levelMapHint {
+            position: absolute;
+            bottom: 0.5%;
+            left: 0;
+            right: 0;
+            margin: 0;
+            font-size: 0.65rem;
+            text-shadow: 1px 1px 2px #000;
+        }
+        @media (max-width: 640px) {
+            .landscape-container {
+                min-height: 100dvh;
+            }
+            .slide {
+                min-height: calc(100dvh - 52px);
+                padding: 1rem !important;
+            }
+            #userStatusBar {
+                gap: 0.35rem 0.65rem;
+                font-size: 0.65rem;
+            }
+            #userStatusBar > span:nth-child(1),
+            #userStatusBar > span:nth-child(2) {
+                display: none;
+            }
+            .identity-volcano-panel {
+                padding: 1rem !important;
+            }
+            .question-emblem {
+                width: 42px;
+                height: 42px;
+                font-size: 1rem;
+            }
+            #questionText {
+                font-size: 0.95rem;
+            }
+            .anime-option {
+                padding: 0.75rem !important;
+            }
+            .volcano-certificate {
+                padding: 1.15rem !important;
+            }
+            .adventure-map {
+                min-height: 0;
+                aspect-ratio: 16 / 9;
+                background-position: center;
+            }
+            .level-card {
+                min-height: 0;
+                padding: 0.2rem;
+                border-width: 1px !important;
+            }
+            .level-card > span:first-child { margin-bottom: 0.1rem; }
+            .level-card > span:first-child span:first-child { width: 1.25rem; height: 1.25rem; font-size: 0.7rem; }
+            .level-card strong { font-size: 0.5rem; }
+            .level-card > span:not(:first-child) { font-size: 0.42rem; }
+            #levelMapHint {
+                display: none;
+            }
+        }
+        .anime-question-card {
+            isolation: isolate;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(8, 47, 73, 0.96), rgba(15, 23, 42, 0.98) 58%, rgba(88, 28, 135, 0.55));
+            border: 2px solid rgba(103, 232, 249, 0.65) !important;
+            box-shadow: 0 0 0 3px rgba(8, 47, 73, 0.7), 0 14px 35px rgba(2, 6, 23, 0.55), inset 0 0 28px rgba(34, 211, 238, 0.12);
+        }
+        .anime-question-card::before,
+        .anime-question-card::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .anime-question-card::before {
+            width: 190px;
+            height: 8px;
+            top: 18px;
+            right: -48px;
+            background: #fbbf24;
+            transform: rotate(-35deg);
+            box-shadow: 0 16px 0 rgba(251, 191, 36, 0.55), 0 32px 0 rgba(251, 191, 36, 0.25);
+        }
+        .anime-question-card::after {
+            width: 120px;
+            height: 120px;
+            right: -55px;
+            bottom: -55px;
+            border: 3px solid rgba(244, 114, 182, 0.55);
+            transform: rotate(45deg);
+        }
+        .question-emblem {
+            width: 54px;
+            height: 54px;
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #fbbf24;
+            border-radius: 16px 7px 16px 7px;
+            color: #fff;
+            background: linear-gradient(145deg, #0891b2, #7c3aed);
+            box-shadow: 4px 4px 0 rgba(251, 191, 36, 0.75), 0 0 22px rgba(34, 211, 238, 0.35);
+            transform: rotate(-5deg);
+            font-size: 1.45rem;
+        }
+        .question-kicker {
+            color: #fbbf24;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+        .anime-option {
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+            border: 2px solid rgba(71, 85, 105, 0.85) !important;
+            background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.9)) !important;
+            box-shadow: 4px 4px 0 rgba(8, 47, 73, 0.7);
+            cursor: grab;
+        }
+        .anime-option::after {
+            content: "";
+            position: absolute;
+            width: 70px;
+            height: 2px;
+            right: 12px;
+            top: 9px;
+            background: rgba(103, 232, 249, 0.45);
+            transform: skewX(-35deg);
+        }
+        .anime-option:hover {
+            border-color: #fbbf24 !important;
+            box-shadow: 6px 6px 0 rgba(217, 119, 6, 0.65), 0 0 18px rgba(251, 191, 36, 0.2);
+            transform: translateX(4px);
+        }
+        .anime-option:active {
+            cursor: grabbing;
+        }
+        .drag-hint {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            border-radius: 0.65rem;
+            background: rgba(8, 47, 73, 0.45);
+            border: 1px solid rgba(103, 232, 249, 0.55);
+            color: #d7f9ff;
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.22rem 0.45rem;
+            margin-bottom: 0.2rem;
+            animation: hintPulse 1.8s ease-in-out infinite;
+        }
+        #optionsContainer {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.55rem;
+            align-items: stretch;
+        }
+        .category-zone {
+            min-height: 132px;
+            max-width: 100%;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 0.45rem;
+            border-radius: 0.75rem;
+        }
+        .category-zone > div:first-child {
+            margin-bottom: 0.2rem;
+        }
+        .category-zone > div:first-child span:first-child {
+            font-size: 0.58rem;
+            letter-spacing: 0.08em;
+        }
+        .category-zone > div:first-child span:last-child {
+            font-size: 0.56rem;
+        }
+        .category-items {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.25rem;
+            margin-top: 0.2rem;
+            min-height: 84px;
+        }
+        .category-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            text-align: center;
+            line-height: 1.2;
+            padding: 0.35rem 0.4rem;
+            border-radius: 0.65rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .anime-option {
+            min-height: 46px;
+            font-size: 0.75rem;
+            padding: 0.6rem 0.7rem !important;
+            border-radius: 0.75rem !important;
+        }
+        @keyframes hintPulse {
+            0%, 100% { box-shadow: 0 0 0 rgba(34, 211, 238, 0), transform: translateY(0); }
+            50% { box-shadow: 0 0 18px rgba(34, 211, 238, 0.35), transform: translateY(-1px); }
+        }
+        .level-theme-structure {
+            background: linear-gradient(135deg, rgba(8, 47, 73, 0.98), rgba(15, 23, 42, 0.98) 58%, rgba(14, 116, 144, 0.55));
+            border-color: rgba(34, 211, 238, 0.75) !important;
+        }
+        .level-theme-rock {
+            background: linear-gradient(135deg, rgba(51, 65, 85, 0.98), rgba(30, 41, 59, 0.98) 58%, rgba(120, 113, 108, 0.62));
+            border-color: rgba(203, 213, 225, 0.78) !important;
+        }
+        .level-theme-cycle {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.98), rgba(15, 23, 42, 0.98) 58%, rgba(13, 148, 136, 0.55));
+            border-color: rgba(45, 212, 191, 0.76) !important;
+        }
+        .level-theme-plates {
+            background: linear-gradient(135deg, rgba(88, 28, 135, 0.98), rgba(30, 41, 59, 0.98) 58%, rgba(190, 24, 93, 0.52));
+            border-color: rgba(216, 180, 254, 0.78) !important;
+        }
+        .level-theme-tectonism {
+            background: linear-gradient(135deg, rgba(127, 29, 29, 0.98), rgba(28, 25, 23, 0.98) 58%, rgba(234, 88, 12, 0.58));
+            border-color: rgba(251, 146, 60, 0.82) !important;
+        }
+        .level-theme-structure .question-emblem { background: linear-gradient(145deg, #0891b2, #2563eb); }
+        .level-theme-rock .question-emblem { background: linear-gradient(145deg, #94a3b8, #57534e); }
+        .level-theme-cycle .question-emblem { background: linear-gradient(145deg, #14b8a6, #15803d); }
+        .level-theme-plates .question-emblem { background: linear-gradient(145deg, #a855f7, #be185d); }
+        .level-theme-tectonism .question-emblem { background: linear-gradient(145deg, #f97316, #991b1b); }
+        /* Palet batuan-lava untuk seluruh area belajar, kecuali sertifikat. */
+        .slide:not(#slide7) [class*="bg-slate-"] {
+            background-color: rgba(28, 25, 23, 0.82) !important;
+        }
+        .slide:not(#slide7) [class*="border-slate-"] {
+            border-color: rgba(120, 113, 108, 0.72) !important;
+        }
+        .slide:not(#slide7) [class*="text-slate-400"],
+        .slide:not(#slide7) [class*="text-slate-500"] {
+            color: #d6c7bc !important;
+        }
+        .slide:not(#slide7) [class*="text-emerald-"] {
+            color: #4ade80 !important;
+        }
+        .slide:not(#slide7) [class*="bg-emerald-"] {
+            background-color: rgba(20, 83, 45, 0.86) !important;
+        }
+        .slide:not(#slide7) [class*="border-emerald-"] {
+            border-color: rgba(34, 197, 94, 0.7) !important;
+        }
+        #userStatusBar [class*="text-emerald-"] {
+            color: #4ade80 !important;
+        }
+        .correct-answer-state {
+            background-color: rgba(6, 78, 59, 0.92) !important;
+            border-color: #22c55e !important;
+            color: #bbf7d0 !important;
+        }
+        .category-item.correct {
+            background: rgba(6, 78, 59, 0.82) !important;
+            border-color: rgba(34, 197, 94, 0.95) !important;
+            color: #dcfce7 !important;
+        }
+        .category-item.incorrect {
+            background: rgba(127, 29, 29, 0.82) !important;
+            border-color: rgba(248, 113, 113, 0.95) !important;
+            color: #fee2e2 !important;
+        }
+        .correct-feedback-state {
+            background-color: rgba(20, 83, 45, 0.86) !important;
+            border-color: #22c55e !important;
+            color: #bbf7d0 !important;
+        }
+        .correct-feedback-state i {
+            color: #4ade80 !important;
+        }
+        .level-up-notification {
+            position: fixed;
+            z-index: 50;
+            top: 1.5rem;
+            left: 50%;
+            width: min(90vw, 430px);
+            padding: 1rem 1.25rem;
+            border: 3px solid #fbbf24;
+            border-radius: 18px 8px 18px 8px;
+            background: linear-gradient(135deg, rgba(8, 47, 73, 0.98), rgba(88, 28, 135, 0.98));
+            box-shadow: 6px 6px 0 rgba(217, 119, 6, 0.75), 0 0 30px rgba(251, 191, 36, 0.35);
+            color: white;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -150%);
+            transition: opacity 0.25s ease, transform 0.35s ease;
+        }
+        .level-up-notification.visible {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+        .level-up-notification strong {
+            display: block;
+            color: #fbbf24;
+            font-size: 1.05rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .level-up-notification span {
+            display: block;
+            margin-top: 0.2rem;
+            font-size: 0.8rem;
+            color: #cffafe;
+        }
+        .level-confirm-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(2, 6, 23, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        .level-confirm-modal {
+            width: min(92vw, 440px);
+            border-radius: 1.5rem;
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.96));
+            border: 2px solid rgba(251, 146, 60, 0.7);
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.6), 0 0 0 4px rgba(251, 146, 60, 0.14);
+            padding: 1.5rem 1.25rem 1rem;
+            text-align: center;
+            color: #f8fafc;
+        }
+        .level-confirm-badge {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(34, 211, 238, 0.2));
+            border: 1px solid rgba(251, 146, 60, 0.7);
+            box-shadow: inset 0 0 18px rgba(251, 146, 60, 0.18);
+            font-size: 1.4rem;
+            color: #fbbf24;
+        }
+        .level-confirm-modal h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #f8fafc;
+        }
+        .level-confirm-modal p {
+            margin: 0.7rem auto 0;
+            max-width: 30ch;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+        .level-confirm-actions {
+            margin-top: 1.2rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .level-confirm-btn {
+            min-width: 150px;
+            padding: 0.8rem 1rem;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        .level-confirm-btn:hover {
+            transform: translateY(-1px);
+        }
+        .level-confirm-btn.secondary {
+            background: rgba(51, 65, 85, 0.8);
+            color: #e2e8f0;
+        }
+        .level-confirm-btn.primary {
+            background: linear-gradient(135deg, #f97316, #f59e0b);
+            color: white;
+            border-color: rgba(251, 191, 36, 0.9);
+            box-shadow: 0 10px 24px rgba(249, 115, 22, 0.35);
+        }
+        .avatar-sprite {
+            display: inline-block;
+            width: 64px;
+            height: 64px;
+            flex: 0 0 auto;
+            border: 2px solid #fb923c;
+            border-radius: 12px;
+            background-color: rgba(28, 25, 23, 0.72);
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.45), inset 0 0 8px rgba(2, 6, 23, 0.55);
+        }
+        .avatar-golem { background-image: url('./assets/avatar 5.png'); }
+        .avatar-dragon { background-image: url('./assets/Avatar 1.png'); }
+        .avatar-snake { background-image: url('./assets/avatar 3.png'); }
+        .avatar-turtle { background-image: url('./assets/avatar 2.png'); }
+        .avatar-monster { background-image: url('./assets/avatar 4.png'); }
+        .avatar-sprite.avatar-celebrate {
+            animation: avatarCelebrate 0.8s ease-out;
+        }
+        @keyframes avatarCelebrate {
+            0% { transform: scale(1) rotate(0deg); }
+            35% { transform: scale(1.28) rotate(-8deg); box-shadow: 0 0 28px rgba(251, 191, 36, 0.95); }
+            70% { transform: scale(0.94) rotate(6deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .identity-avatar-sprite {
+            width: 124px;
+            height: 124px;
+            border-radius: 20px;
+        }
+        .avatar-choice-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 0.4rem;
+            width: 100%;
+            margin-top: 0.75rem;
+        }
+        .avatar-choice {
+            min-width: 0;
+            padding: 0.25rem;
+            border: 2px solid rgba(120, 113, 108, 0.7);
+            border-radius: 10px;
+            background: rgba(28, 25, 23, 0.75);
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .avatar-choice:hover,
+        .avatar-choice.selected {
+            border-color: #fb923c;
+            box-shadow: 0 0 14px rgba(249, 115, 22, 0.55);
+            transform: translateY(-3px);
+        }
+        .avatar-choice .avatar-sprite {
+            width: 100%;
+            height: 58px;
+            border: 0;
+            box-shadow: none;
+            background-color: transparent;
+        }
+        .avatar-choice-label {
+            display: block;
+            overflow: hidden;
+            color: #d6c7bc;
+            font-size: 0.55rem;
+            line-height: 1.1;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        @media (max-width: 640px) {
+            .avatar-choice .avatar-sprite { height: 48px; }
+            .avatar-choice-label { display: none; }
+        }
+        .identity-volcano-panel {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.99), rgba(51, 65, 85, 0.97) 48%, rgba(28, 25, 23, 0.99)) !important;
+            border: 2px solid rgba(251, 146, 60, 0.72) !important;
+            box-shadow: inset 0 0 35px rgba(203, 213, 225, 0.1), 0 0 0 3px rgba(124, 45, 18, 0.28), 0 12px 28px rgba(2, 6, 23, 0.5);
+        }
+        .identity-volcano-panel::before,
+        .identity-volcano-panel::after {
+            content: "";
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+        }
+        .identity-volcano-panel::before {
+            width: 230px;
+            height: 90px;
+            right: -55px;
+            bottom: -50px;
+            background: radial-gradient(ellipse, rgba(249, 115, 22, 0.4), rgba(127, 29, 29, 0.14) 42%, transparent 72%);
+            filter: blur(7px);
+        }
+        .identity-volcano-panel::after {
+            width: 130px;
+            height: 280px;
+            left: 48%;
+            top: -185px;
+            border-left: 3px solid rgba(251, 146, 60, 0.48);
+            border-radius: 45%;
+            transform: rotate(22deg);
+            box-shadow: 14px 15px 0 -11px rgba(234, 88, 12, 0.5);
+        }
+        .identity-volcano-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+        .volcano-avatar {
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at 32% 28%, #fef3c7 0 3%, transparent 4%), radial-gradient(circle at 68% 66%, #f97316 0 8%, transparent 9%), linear-gradient(145deg, #cbd5e1, #64748b 48%, #292524) !important;
+            border: 3px solid #fb923c;
+            box-shadow: 0 0 0 4px rgba(30, 41, 59, 0.6), 0 0 22px rgba(249, 115, 22, 0.55), inset -12px -14px 18px rgba(15, 23, 42, 0.55);
+            animation: stoneShine 3.2s ease-in-out infinite;
+        }
+        .volcano-avatar::before,
+        .volcano-avatar::after {
+            content: "";
+            position: absolute;
+            background: rgba(241, 245, 249, 0.5);
+            border-radius: 35% 65% 45% 55%;
+            filter: blur(1px);
+            animation: mineralSparkle 2.8s ease-in-out infinite;
+        }
+        .volcano-avatar::before {
+            width: 14px;
+            height: 14px;
+            top: 8px;
+            left: 18px;
+        }
+        .volcano-avatar::after {
+            width: 9px;
+            height: 9px;
+            top: 17px;
+            right: 18px;
+            animation-delay: 0.8s;
+        }
+        @keyframes stoneShine {
+            0%, 100% { box-shadow: 0 0 0 4px rgba(30, 41, 59, 0.6), 0 0 16px rgba(249, 115, 22, 0.35), inset -12px -14px 18px rgba(15, 23, 42, 0.55); }
+            50% { box-shadow: 0 0 0 4px rgba(30, 41, 59, 0.6), 0 0 30px rgba(251, 146, 60, 0.7), inset -12px -14px 18px rgba(15, 23, 42, 0.55); }
+        }
+        @keyframes mineralSparkle {
+            0%, 100% { transform: translateY(3px) scale(0.75) rotate(0deg); opacity: 0.25; }
+            50% { transform: translateY(-5px) scale(1.15) rotate(18deg); opacity: 0.85; }
+        }
+        /* Cetak PDF khusus untuk Slide 6 */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificatePrintArea, #certificatePrintArea * {
+                visibility: visible;
+            }
+            #certificatePrintArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                color: white !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-2 md:p-6">
+    <script>
+        const klikAudio = new Audio('./assets/klik.mp3');
+        klikAudio.preload = 'auto';
+        klikAudio.volume = 0.6;
+
+        const gameMusic = new Audio('./assets/musik.mp3');
+        gameMusic.preload = 'auto';
+        gameMusic.loop = true;
+        gameMusic.volume = 0.25;
+        let gameMusicStarted = false;
+
+        function setupVolumeControls() {
+            const volumeControl = document.getElementById('volumeControl');
+            const volumeToggle = document.getElementById('volumeToggle');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumeValue = document.getElementById('volumeValue');
+            if (!volumeControl || !volumeToggle || !volumeSlider || !volumeValue) return;
+
+            const volumeIcon = volumeToggle.querySelector('i');
+
+            function updateVolumeUI(value) {
+                const currentValue = Math.max(0, Math.min(100, Number(value) || 0));
+                const icon = currentValue === 0 ? 'fa-volume-xmark' : 'fa-volume-high';
+                volumeIcon.className = `fa-solid ${icon}`;
+                volumeSlider.value = String(currentValue);
+                volumeValue.textContent = `${currentValue}%`;
+                gameMusic.volume = currentValue / 100;
+            }
+
+            volumeToggle.addEventListener('click', event => {
+                event.stopPropagation();
+                volumeControl.classList.toggle('open');
+            });
+
+            volumeSlider.addEventListener('input', event => {
+                updateVolumeUI(event.target.value);
+            });
+
+            document.addEventListener('click', event => {
+                if (!volumeControl.contains(event.target)) {
+                    volumeControl.classList.remove('open');
+                }
+            });
+
+            updateVolumeUI(gameMusic.volume * 100);
+        }
+
+        document.addEventListener('DOMContentLoaded', setupVolumeControls);
+
+        function startGameMusic() {
+            if (gameMusicStarted) return;
+            gameMusicStarted = true;
+            try {
+                gameMusic.currentTime = 2;
+                gameMusic.play().catch(() => {});
+            } catch (error) {
+                console.log('Musik game tidak dapat diputar:', error);
+            }
+        }
+
+        function playKlikSound(event) {
+            const target = event.target;
+            if (!target) return;
+
+            const interactive = target.closest(
+                'button, a, input, select, textarea, [role="button"], [onclick], .avatar-choice, .level-card, .option-btn'
+            );
+
+            if (!interactive) return;
+
+            startGameMusic();
+
+            try {
+                klikAudio.currentTime = 0;
+                klikAudio.play().catch(() => {});
+            } catch (error) {
+                console.log('Suara klik tidak dapat diputar:', error);
+            }
+        }
+
+        document.addEventListener('click', playKlikSound);
+    </script>
+
+    <div class="landscape-container bg-slate-900/90 border border-slate-700/60 rounded-2xl overflow-hidden flex flex-col relative backdrop-blur-md">
+        <div class="top-right-logo hero-logo" style="left: 18px; right: auto; width: 70px; height: 70px;">
+            <img src="./assets/logo.png" alt="Logo UNP">
+        </div>
+        <div class="top-right-logo-label" style="left: 96px; right: auto; top: 32px;">UNIVERSITAS NEGERI PADANG</div>
+        <div class="top-right-logo-subtitle" style="left: 96px; right: auto; top: 59px;">GeoLitosfer Game - Fase E Kelas X</div>
+
+        <div id="volumeControl" class="volume-control">
+            <button id="volumeToggle" class="volume-toggle" type="button" aria-label="Atur volume musik">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <div class="volume-panel">
+                <div class="volume-label">
+                    <span>Volume</span>
+                    <span id="volumeValue">25%</span>
+                </div>
+                <input id="volumeSlider" class="volume-slider" type="range" min="0" max="100" value="25" aria-label="Slider volume musik">
+            </div>
+        </div>
+        
+        <!-- Header Navigasi Kecil / Status Bar -->
+        <div class="bg-slate-950/80 px-6 py-3 border-b border-slate-800 flex justify-between items-center text-xs md:text-sm text-slate-400">
+            <div></div>
+            <div id="userStatusBar" class="hidden flex items-center space-x-4">
+                <span><i class="fa-solid fa-user-graduate text-orange-400 mr-1"></i> <b id="barName" class="text-white"></b></span>
+                <span><i class="fa-solid fa-school text-orange-400 mr-1"></i> <b id="barSchool" class="text-white"></b></span>
+                <span class="flex items-center gap-2"><span id="barAvatar" class="avatar-sprite avatar-golem" title="Avatar Penjelajah"></span></span>
+                <span><i class="fa-solid fa-star text-amber-400 mr-1"></i> Skor: <b id="barScore" class="text-amber-300">0</b></span>
+                <span><i class="fa-solid fa-medal text-amber-400 mr-1"></i> Bintang: <b id="barStars" class="text-amber-300">0</b></span>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 1: JUDUL & IDENTITAS ================= -->
+        <div id="slide1" class="slide active flex-1 flex-col justify-between p-6 md:p-12 relative overflow-hidden">
+            <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-20 -top-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="my-auto z-10 w-full">
+                <div class="flex items-center justify-center gap-4 md:gap-8">
+                    <div class="hidden md:flex flex-col items-center justify-end pt-52">
+                        <div class="portrait-frame rounded-md border border-orange-300/10 bg-orange-500/5 p-0.25 shadow-none">
+                            <img src="./assets/Bagus.png" alt="Bagus" class="w-[30rem] lg:w-[34rem] xl:w-[38rem] h-auto rounded-sm object-cover">
+                        </div>
+                        <span class="mt-3 text-sm lg:text-base font-bold text-orange-200">Bagus Setiawan</span>
+                    </div>
+                    <div class="text-center space-y-4">
+                        <img src="./assets/judul.png" alt="Petualangan Litosfer" class="title-art mx-auto">
+                        <button onclick="goToSlide(2)" class="lava-start-button mx-auto px-9 py-3 text-white font-extrabold rounded-xl transition transform hover:-translate-y-0.5 flex items-center space-x-2">
+                            <span>Mulai Petualangan</span>
+                            <i class="fa-solid fa-fire text-amber-100"></i>
+                        </button>
+                        <span class="inline-block px-4 py-1.5 rounded-full bg-orange-500/20 text-orange-300 text-xs md:text-sm font-medium tracking-wide border border-orange-500/30">
+                            <i class="fa-solid fa-book-open mr-2"></i> Mata Pelajaran Geografi • Ekspedisi Geografi Litosfer
+                        </span>
+                        <h1 class="sr-only">Petualangan Litosfer Bumi</h1>
+                        <p class="max-w-2xl mx-auto text-slate-300 text-sm md:text-base">
+                            Game edukasi interaktif penjelajahan lapisan bumi, struktur batuan, siklus geologi, lempeng tektonik, hingga dinamika tektonisme berbasis materi Ruangguru.
+                        </p>
+                    </div>
+                    <div class="hidden md:flex flex-col items-center justify-end pt-52">
+                        <div class="portrait-frame rounded-md border border-cyan-300/10 bg-cyan-500/5 p-0.25 shadow-none">
+                            <img src="./assets/nofrion.png" alt="Nofrion" class="w-[30rem] lg:w-[34rem] xl:w-[38rem] h-auto rounded-sm object-cover">
+                        </div>
+                        <span class="mt-3 text-sm lg:text-base font-bold text-cyan-200">Dr. Nofrion M Pd.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center z-10 pt-4 border-t border-slate-800">
+                <div class="text-xs text-slate-400 text-center">
+                    <p>Fase E • Kelas X SMA</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 2: INPUT IDENTITAS & AVATAR LITOSFER ================= -->
+        <div id="slide2" class="slide flex-1 flex-col justify-between p-6 md:p-12 overflow-y-auto">
+            <div class="max-w-3xl mx-auto w-full space-y-6 my-auto">
+                <div class="text-center">
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Identitas Penjelajah & Avatar Karakter</h2>
+                    <p class="text-slate-400 text-sm">Masukkan data diri Anda untuk memulai ekspedisi litosfer.</p>
+                </div>
+
+                <div class="identity-volcano-panel grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Nama Lengkap</label>
+                            <input type="text" id="inputName" placeholder="Contoh: Budi Santoso" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Kelas</label>
+                            <input type="text" id="inputClass" placeholder="Contoh: X E 3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Asal Sekolah</label>
+                            <input type="text" id="inputSchool" placeholder="Contoh: SMA Negeri 1 Padang" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 text-sm">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center bg-slate-900/80 rounded-xl p-4 border border-slate-800/80">
+                        <span class="text-xs text-slate-400 mb-2">Pilih Avatar Karakter Litosfer:</span>
+                            <div id="avatarContainer" class="volcano-avatar identity-avatar-sprite flex items-center justify-center text-4xl mb-3">
+                                <span id="avatarIcon" class="avatar-sprite identity-avatar-sprite avatar-golem"></span>
+                        </div>
+                            <span id="avatarTitle" class="text-sm font-bold text-orange-400">Penjelajah Struktur Bumi</span>
+                        <div id="avatarChoiceGrid" class="avatar-choice-grid" aria-label="Pilihan avatar"></div>
+                        <p class="text-xs text-slate-400 text-center mt-1">Klik avatar yang ingin digunakan saat bermain.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+                <button onclick="goToSlide(1)" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-sm transition">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                </button>
+                <button onclick="saveIdentityAndNext()" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-semibold rounded-xl shadow-lg shadow-orange-600/30 transition text-sm flex items-center space-x-2">
+                    <span>Lanjut ke Tujuan Pembelajaran</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 3: TUJUAN PEMBELAJARAN & GAMBARAN UMUM ================= -->
+        <div id="slide3" class="slide flex-1 flex-col justify-between p-6 md:p-12 overflow-y-auto">
+            <div class="max-w-4xl mx-auto w-full space-y-6 my-auto">
+                <div class="text-center">
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Tujuan Pembelajaran & Gambaran Materi</h2>
+                    <p class="text-slate-400 text-sm">Peta Kompetensi Dasar Bab Litosfer Berdasarkan Referensi Ruangguru</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-950/60 p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <div class="flex items-center space-x-3 text-orange-400">
+                            <i class="fa-solid fa-bullseye text-xl"></i>
+                            <h3 class="font-bold text-lg text-white">Tujuan Pembelajaran</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-300">
+                            <li class="flex items-start"><i class="fa-solid fa-check text-orange-400 mt-1 mr-2"></i> Menganalisis dinamika litosfer dan dampaknya terhadap kehidupan di bumi.</li>
+                            <li class="flex items-start"><i class="fa-solid fa-check text-orange-400 mt-1 mr-2"></i> Menjelaskan struktur lapisan bumi (Kerak, Mantel, Inti).</li>
+                            <li class="flex items-start"><i class="fa-solid fa-check text-orange-400 mt-1 mr-2"></i> Mengklasifikasikan jenis batuan penyusun kulit bumi & siklus batuan.</li>
+                            <li class="flex items-start"><i class="fa-solid fa-check text-orange-400 mt-1 mr-2"></i> Memahami pergerakan lempeng tektonik dan gejala tektonisme.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-950/60 p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <div class="flex items-center space-x-3 text-cyan-400">
+                            <i class="fa-solid fa-map-location-dot text-xl"></i>
+                            <h3 class="font-bold text-lg text-white">Gambaran Materi & Game</h3>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            <b>Litosfer</b> adalah lapisan terluar bumi yang tersusun atas <b>kerak bumi</b> dan <b>bagian atas mantel bumi</b>. Kata litosfer berasal dari <i>lithos</i> (batu) dan <i>sphaira</i> (bulatan), sehingga litosfer berarti lapisan batuan pembentuk permukaan bumi. Lapisan ini menjadi tempat makhluk hidup tinggal, tempat terbentuknya gunung, pegunungan, lembah, dan lautan, serta menjadi dasar bagi aktivitas manusia. Karena litosfer terdiri atas lempeng-lempeng tektonik yang bergerak, lapisan ini juga memengaruhi terbentuknya gempa bumi, vulkanisme, dan perubahan bentang alam di berbagai wilayah.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+                <button onclick="goToSlide(2)" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-sm transition">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                </button>
+                <button onclick="goToSlide(4)" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-semibold rounded-xl shadow-lg shadow-orange-600/30 transition text-sm flex items-center space-x-2">
+                    <span>Eksplorasi Uraian Materi</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 4: URAIAN MATERI INTERAKTIF ================= -->
+        <div id="slide4" class="slide flex-1 flex-col justify-between p-6 md:p-12 overflow-y-auto">
+            <div class="max-w-4xl mx-auto w-full space-y-6 my-auto">
+                <div class="text-center">
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Uraian Materi Interaktif Litosfer</h2>
+                    <p class="text-slate-400 text-sm">Pilih topik materi di bawah untuk memahami konsep dasar sebelum bermain game.</p>
+                </div>
+
+                <!-- Tab Interaktif Materi -->
+                <div class="flex flex-wrap justify-center gap-2 mb-4">
+                    <button onclick="switchMaterialTab(1)" id="tabBtn1" class="px-4 py-2 rounded-xl text-xs font-semibold bg-orange-500 text-white transition shadow-md">1. Struktur Bumi</button>
+                    <button onclick="switchMaterialTab(2)" id="tabBtn2" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 transition hover:bg-slate-700">2. Batuan Penyusun</button>
+                    <button onclick="switchMaterialTab(3)" id="tabBtn3" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 transition hover:bg-slate-700">3. Siklus Batuan</button>
+                    <button onclick="switchMaterialTab(4)" id="tabBtn4" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 transition hover:bg-slate-700">4. Lempeng Tektonik</button>
+                    <button onclick="switchMaterialTab(5)" id="tabBtn5" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 transition hover:bg-slate-700">5. Tektonisme</button>
+                </div>
+
+                <div id="materialContent" class="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 min-h-[220px] flex flex-col justify-center">
+                    <!-- Konten dinamis materi -->
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+                <button onclick="goToSlide(3)" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-sm transition">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                </button>
+                <button onclick="goToSlide(5)" class="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-semibold rounded-xl shadow-lg shadow-amber-600/30 transition text-sm flex items-center space-x-2">
+                    <span>Mulai Petualangan Level Game <i class="fa-solid fa-gamepad ml-1"></i></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 5: PETUALANGAN LEVEL GAME ================= -->
+        <div id="slide5" class="slide flex-1 flex-col justify-between p-4 md:p-8 overflow-y-auto">
+            <div class="max-w-4xl mx-auto w-full space-y-4 my-auto">
+                <!-- Peta Petualangan Level -->
+                <section class="adventure-map rounded-2xl border-2 border-amber-300/60 p-4 md:p-6 shadow-2xl overflow-hidden" aria-labelledby="levelMapTitle">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div>
+                            <p class="text-[10px] uppercase tracking-[0.25em] text-amber-200 font-bold">Jalur Petualangan</p>
+                            <h2 id="levelMapTitle" class="text-xl md:text-2xl font-extrabold text-white drop-shadow">Peta Penjelajahan Litosfer</h2>
+                        </div>
+                        <div class="rounded-full bg-slate-950/70 border border-amber-200/40 px-3 py-1.5 text-[10px] md:text-xs text-amber-100 font-semibold">
+                            <i class="fa-solid fa-location-dot mr-1"></i> Pilih level
+                        </div>
+                    </div>
+                    <div id="levelMap" class="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3"></div>
+                    <div class="level-path mt-4 rounded-full"></div>
+                    <p id="levelMapHint" class="text-center text-[10px] md:text-xs text-white/80 mt-3">Selesaikan level aktif untuk membuka jalur berikutnya.</p>
+                </section>
+
+                <div class="flex items-center justify-between bg-slate-950/70 px-4 py-3 rounded-xl border border-slate-800 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div id="currentLevelBadge" class="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/40 flex items-center justify-center font-bold text-lg">1</div>
+                        <div>
+                            <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Level Aktif</span>
+                            <h3 id="levelTitleText" class="font-bold text-white text-sm md:text-base">Level 1: Struktur Bumi</h3>
+                        </div>
+                    </div>
+                    <span id="levelProgressText" class="text-xs text-amber-300 font-semibold">0 / 5 selesai</span>
+                </div>
+
+            </div>
+
+            <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+                <button onclick="goToSlide(4)" class="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-xs md:text-sm transition">
+                    <i class="fa-solid fa-book mr-1"></i> Lihat Materi
+                </button>
+                <button onclick="selectLevel(userData.currentLevel)" class="px-6 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-xl text-sm shadow-lg transition">
+                    Buka Soal Level Aktif <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 6: SOAL LEVEL ================= -->
+        <div id="slide6" class="slide flex-1 flex-col justify-between p-4 md:p-8 overflow-y-auto">
+            <div class="max-w-4xl mx-auto w-full space-y-4 my-auto">
+                <div class="flex items-center justify-between bg-slate-950/70 px-4 py-3 rounded-xl border border-slate-800 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div id="questionLevelBadge" class="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/40 flex items-center justify-center font-bold text-lg">1</div>
+                        <div>
+                            <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Level Aktif</span>
+                            <h3 id="questionLevelTitleText" class="font-bold text-white text-sm md:text-base">Level 1: Struktur Bumi</h3>
+                        </div>
+                    </div>
+                    <span id="questionProgressText" class="text-xs text-amber-300 font-semibold">0 / 5 selesai</span>
+                </div>
+
+                <div class="anime-question-card p-5 md:p-6 rounded-2xl space-y-4 relative">
+                    <div class="flex justify-between items-center text-xs text-slate-300">
+                        <span id="questionCounter" class="font-bold tracking-wide">Soal 1 dari 5</span>
+                        <span id="questionTypeBadge" class="px-2.5 py-1 rounded-md bg-cyan-500/30 text-cyan-100 font-bold">Menjodohkan Klasifikasi</span>
+                    </div>
+                    <div class="flex items-start gap-4 py-2">
+                        <div id="questionEmblem" class="question-emblem"><i class="fa-solid fa-layer-group"></i></div>
+                        <div>
+                            <div id="questionKicker" class="question-kicker mb-1">Misi Struktur Bumi</div>
+                            <h4 id="questionText" class="text-base md:text-lg font-extrabold text-white leading-snug">Memuat pertanyaan...</h4>
+                        </div>
+                    </div>
+                    <p class="text-xs text-cyan-300"><i class="fa-solid fa-hand-pointer mr-1"></i> Tarik pasangan yang tepat ke area klasifikasi, lalu lepaskan untuk menjawab.</p>
+                    <div id="level1Workspace" class="grid grid-cols-1 lg:grid-cols-[1.1fr_1.4fr] gap-3 items-stretch">
+                        <div id="optionsContainer" class="space-y-3 pt-2"></div>
+                        <div id="answerDropZone" class="border-2 border-dashed border-cyan-400/60 bg-cyan-950/30 rounded-xl p-4 text-center text-sm text-cyan-200 transition">
+                            <i class="fa-solid fa-arrows-to-circle text-lg mb-1"></i>
+                            <span class="block font-semibold">Pasangkan di sini</span>
+                            <span class="block text-xs text-cyan-300/70">Lepaskan jawaban yang paling sesuai</span>
+                        </div>
+                    </div>
+                    <div id="feedbackMessage" class="hidden p-3 rounded-xl text-sm font-medium"></div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+                <button onclick="goToSlide(5)" class="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-xs md:text-sm transition">
+                    <i class="fa-solid fa-map mr-1"></i> Kembali ke Peta
+                </button>
+                <button id="nextQuestionBtn" onclick="nextQuestion()" class="hidden px-6 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-xl text-sm shadow-lg transition">
+                    Soal Selanjutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SLIDE 7: SERTIFIKAT & NILAI AKHIR ================= -->
+        <div id="slide7" class="slide flex-1 flex-col justify-between p-6 md:p-12 overflow-y-auto">
+            <div class="max-w-5xl mx-auto w-full space-y-6 my-auto">
+                
+                <!-- Area Cetak Sertifikat PDF -->
+                <div id="certificatePrintArea" class="volcano-certificate bg-white text-slate-900 p-8 rounded-2xl border-4 border-emerald-600 shadow-2xl relative">
+                    <div class="absolute top-4 right-4 text-emerald-600 opacity-20 text-7xl font-bold pointer-events-none">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+
+                    <div class="certificate-title text-center space-y-3">
+                        <div class="flex items-center justify-center space-x-2 text-emerald-700 font-bold text-xs uppercase tracking-widest">
+                            <i class="fa-solid fa-earth-americas"></i>
+                            <span>Sertifikat Kelulusan Petualangan Litosfer</span>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 font-serif">SERTIFIKAT PENJELAJAH GEOGRAFI</h2>
+                        <p class="text-xs text-slate-500">Diberikan secara resmi kepada penjelajah berprestasi dalam materi Litosfer Fase E</p>
+                    </div>
+
+                    <div class="my-6 text-center space-y-2">
+                        <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Nama Peserta didik:</p>
+                        <h3 id="certName" class="text-xl md:text-2xl font-bold text-emerald-800 underline decoration-emerald-400">---</h3>
+                        <p class="text-xs uppercase tracking-widest text-slate-500 font-semibold mt-3">Klasifikasi Keahlian</p>
+                        <h4 id="certClassification" class="text-lg md:text-xl font-extrabold text-orange-700 uppercase">---</h4>
+                        <p id="certClassificationDetail" class="text-xs text-slate-500">Berdasarkan jawaban benar terbanyak</p>
+                        <div class="flex justify-center space-x-6 text-sm text-slate-700 pt-1">
+                            <span>Kelas: <strong id="certClass">---</strong></span>
+                            <span>Sekolah: <strong id="certSchool">---</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="certificate-score-box bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex justify-around items-center text-center my-4">
+                        <div>
+                            <span class="block text-xs text-emerald-700 font-semibold uppercase">Total Skor Akhir</span>
+                            <span id="certScore" class="text-3xl font-black text-emerald-900">0</span>
+                        </div>
+                        <div class="border-l border-emerald-200 h-10"></div>
+                        <div>
+                            <span class="block text-xs text-emerald-700 font-semibold uppercase">Status Kelulusan</span>
+                            <span class="text-lg font-bold text-emerald-700"><i class="fa-solid fa-circle-check mr-1"></i> Tuntas Sempurna</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-end pt-6 border-t border-slate-200 text-xs text-slate-500">
+                        <div>
+                            <p class="font-semibold text-slate-700">Materi: Litosfer (Ruangguru Reference)</p>
+                            <p>Evaluasi 5 Level Selesai</p>
+                            <p>Kelas: <strong id="certClassFooter">---</strong> &bull; Sekolah: <strong id="certSchoolFooter">---</strong></p>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-serif font-bold text-slate-800 text-sm">Tim Ahli Pembelajaran Geografi</div>
+                            <div class="text-[10px] text-slate-400">Fase E Kelas X SMA</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="flex justify-between items-center pt-4 border-t border-slate-800 no-print">
+                <button onclick="restartGame()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-sm transition">
+                    <i class="fa-solid fa-rotate-right mr-2"></i> Mainkan Ulang
+                </button>
+                <button onclick="printCertificate()" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-semibold rounded-xl shadow-lg shadow-orange-600/30 transition text-sm flex items-center space-x-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Cetak Sertifikat & Nilai (PDF)</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="levelUpNotification" class="level-up-notification" role="status" aria-live="polite">
+        <i class="fa-solid fa-bolt text-amber-300 mr-1"></i>
+        <strong>Level Naik!</strong>
+        <span id="levelUpMessage">Level berikutnya telah terbuka.</span>
+    </div>
+
+    <div id="levelConfirmOverlay" class="level-confirm-overlay hidden" aria-hidden="true">
+        <div class="level-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="levelConfirmTitle">
+            <div class="level-confirm-badge"><i class="fa-solid fa-route"></i></div>
+            <h3 id="levelConfirmTitle">Lanjut Level?</h3>
+            <p id="levelConfirmText">Level selesai. Apakah Anda ingin melanjutkan ke level berikutnya?</p>
+            <div class="level-confirm-actions">
+                <button type="button" class="level-confirm-btn secondary" onclick="handleLevelConfirm(false)">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Tidak, Kembali
+                </button>
+                <button type="button" class="level-confirm-btn primary" onclick="handleLevelConfirm(true)">
+                    <i class="fa-solid fa-arrow-right mr-2"></i> Lanjut
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logika Game Interaktif -->
+    <script>
+        // Data State
+        let userData = {
+            name: "",
+            classRoom: "",
+            school: "",
+            avatar: { icon: "avatar-golem", title: "Penjelajah Struktur Bumi" },
+            score: 0,
+            stars: 0,
+            totalCorrectAnswers: 0,
+            currentLevel: 1,
+            currentQuestionIdx: 0,
+            selectedAvatarIndex: 0,
+            correctByLevel: [0, 0, 0, 0, 0]
+        };
+
+        const avatarsList = [
+            { icon: "avatar-golem", title: "Penjelajah Struktur Bumi" },
+            { icon: "avatar-dragon", title: "Spesialis Batuan Penyusun" },
+            { icon: "avatar-snake", title: "Penjaga Siklus Batuan" },
+            { icon: "avatar-turtle", title: "Navigator Lempeng Tektonik" },
+            { icon: "avatar-monster", title: "Pakar Tektonisme" }
+        ];
+        const expertiseTitles = [
+            "Ahli Struktur Bumi",
+            "Ahli Mineral",
+            "Penyelidik Siklus",
+            "Ahli Pergerakan Bumi",
+            "Ahli Gunung Api dan Seisme"
+        ];
+        let shuffledGameLevels = [];
+
+        function shuffleArray(items) {
+            const cloned = [...items];
+            for (let i = cloned.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cloned[i], cloned[j]] = [cloned[j], cloned[i]];
+            }
+            return cloned;
+        }
+
+        function cloneQuestionWithShuffledOptions(question) {
+            const clonedQuestion = JSON.parse(JSON.stringify(question));
+            const shuffledOptions = shuffleArray(
+                clonedQuestion.options.map((option, originalIndex) => ({ option, originalIndex }))
+            );
+
+            clonedQuestion.options = shuffledOptions.map(item => item.option);
+
+            const answerOriginalIndex = clonedQuestion.answer;
+            clonedQuestion.answer = shuffledOptions.findIndex(item => item.originalIndex === answerOriginalIndex);
+
+            if (Array.isArray(clonedQuestion.categories)) {
+                clonedQuestion.categories = clonedQuestion.categories.map((category) => ({
+                    ...category,
+                    correctIndexes: category.correctIndexes.map((originalIndex) => {
+                        return shuffledOptions.findIndex(item => item.originalIndex === originalIndex);
+                    })
+                }));
+            }
+
+            return clonedQuestion;
+        }
+
+        function initializeShuffledGameSession() {
+            shuffledGameLevels = gameLevels.map((level) => {
+                const shuffledBank = shuffleArray(
+                    (level.questions || []).map((question) => cloneQuestionWithShuffledOptions(question))
+                );
+                const questionLimit = level.level === 2 ? 5 : 5;
+
+                return {
+                    ...level,
+                    questions: shuffledBank.slice(0, questionLimit)
+                };
+            });
+        }
+
+        function updateProgressHud() {
+            const barScore = document.getElementById('barScore');
+            const barStars = document.getElementById('barStars');
+            if (barScore) {
+                barScore.innerText = userData.score;
+            }
+            if (barStars) {
+                barStars.innerText = userData.stars;
+            }
+            syncLevel2ContinueButton();
+        }
+
+        function syncLevel2ContinueButton() {
+            const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+            if (!nextQuestionBtn || userData.currentLevel !== 2) {
+                return;
+            }
+
+            if (userData.stars >= 20) {
+                nextQuestionBtn.classList.remove('hidden');
+                nextQuestionBtn.disabled = false;
+                nextQuestionBtn.innerHTML = 'Lanjut ke Level 3 <i class="fa-solid fa-arrow-right ml-1"></i>';
+                nextQuestionBtn.onclick = () => openLevelConfirmModal();
+            } else {
+                nextQuestionBtn.classList.add('hidden');
+                nextQuestionBtn.disabled = false;
+                nextQuestionBtn.onclick = null;
+            }
+        }
+
+        function canAdvanceToNextLevel() {
+            if (userData.currentLevel !== 2) {
+                return true;
+            }
+
+            return userData.stars >= 20;
+        }
+
+        function renderAvatarChoices() {
+            const choiceGrid = document.getElementById('avatarChoiceGrid');
+            if (!choiceGrid) {
+                return;
+            }
+
+            choiceGrid.innerHTML = avatarsList.map((avatar, index) => `
+                <button type="button" class="avatar-choice ${index === userData.selectedAvatarIndex ? 'selected' : ''}" onclick="selectAvatar(${index})" aria-label="Pilih ${avatar.title}">
+                    <span class="avatar-sprite ${avatar.icon}"></span>
+                    <span class="avatar-choice-label">${avatar.title}</span>
+                </button>
+            `).join('');
+        }
+
+        function selectAvatar(index) {
+            const selectedAvatar = avatarsList[index];
+            if (!selectedAvatar) {
+                return;
+            }
+
+            userData.selectedAvatarIndex = index;
+            userData.avatar = selectedAvatar;
+            document.getElementById('avatarIcon').className = `avatar-sprite identity-avatar-sprite ${selectedAvatar.icon}`;
+            document.getElementById('avatarTitle').innerText = selectedAvatar.title;
+            renderAvatarChoices();
+        }
+
+        // Bank soal per level: 10 soal untuk setiap level, lalu 5 soal dipilih secara acak dan ditampilkan setiap sesi
+        const gameLevels = [
+            {
+                level: 1,
+                title: "Struktur Bumi",
+                questions: [
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Lapisan terluar bumi yang menjadi tempat hidup makhluk hidup dan tempat berlangsungnya kegiatan manusia disebut...",
+                        options: ["Kerak bumi", "Mantel bumi", "Inti luar", "Atmosfer"],
+                        answer: 0,
+                        explanation: "Kerak bumi adalah lapisan terluar bumi yang menjadi tempat tinggal makhluk hidup dan bagian litosfer yang paling dekat dengan permukaan."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Lapisan bumi yang terdiri atas kerak bumi dan sebagian mantel atas yang padat dan kaku disebut...",
+                        options: ["Litosfer", "Astenosfer", "Barisfer", "Hidrosfer"],
+                        answer: 0,
+                        explanation: "Litosfer terdiri atas kerak bumi dan sebagian mantel atas yang relatif padat, sehingga membentuk lapisan keras di permukaan bumi."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Kerak benua memiliki ketebalan rata-rata sekitar...",
+                        options: ["5–10 km", "20–70 km", "100–150 km", "2.900 km"],
+                        answer: 1,
+                        explanation: "Kerak benua lebih tebal daripada kerak samudra, yaitu sekitar 20–70 km, karena terdiri atas material granit yang lebih tebal."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Kerak samudra umumnya didominasi oleh batuan...",
+                        options: ["Granit", "Basalt", "Marmer", "Kuarsit"],
+                        answer: 1,
+                        explanation: "Kerak samudra didominasi batuan basalt yang lebih padat dan lebih tipis dibanding kerak benua."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Lapisan di bawah litosfer yang bersifat lebih lunak dan plastis sehingga memungkinkan lempeng bergerak disebut...",
+                        options: ["Astenosfer", "Inti dalam", "Kawah", "Mantel dalam"],
+                        answer: 0,
+                        explanation: "Astenosfer adalah lapisan di bawah litosfer yang lebih lunak dan plastis sehingga lempeng tektonik dapat bergerak di atasnya."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Inti bumi terdiri terutama atas unsur...",
+                        options: ["Silika dan aluminium", "Besi dan nikel", "Karbon dan oksigen", "Tembaga dan magnesium"],
+                        answer: 1,
+                        explanation: "Inti bumi tersusun terutama oleh besi dan nikel, dan memiliki suhu yang sangat tinggi."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Lapisan bumi yang paling dalam dan berperan sebagai sumber panas internal bumi adalah...",
+                        options: ["Kerak bumi", "Mantel bumi", "Inti bumi", "Atmosfer"],
+                        answer: 2,
+                        explanation: "Inti bumi merupakan lapisan terdalam bumi dan menjadi sumber panas internal yang memengaruhi aktivitas geologi bumi."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Bagian mantel bumi yang paling dekat dengan kerak biasanya bersifat...",
+                        options: ["Cair sepenuhnya", "Kaku dan padat", "Gas dan ringan", "Padat seperti besi murni"],
+                        answer: 1,
+                        explanation: "Bagian atas mantel bumi masih relatif padat dan kaku, kemudian makin ke bawah menjadi lebih plastis dan panas."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Lapisan bumi yang memungkinkan terjadinya arus konveksi dan pergerakan lempeng adalah...",
+                        options: ["Kerak samudra", "Mantel bumi", "Inti luar", "Biosfer"],
+                        answer: 1,
+                        explanation: "Arus konveksi terjadi di mantel bumi dan menjadi penyebab utama pergerakan lempeng tektonik."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Lapisan yang memisahkan bumi dengan atmosfer dan menjadi permukaan tempat terjadinya gejala geologi adalah...",
+                        options: ["Kerak bumi", "Inti dalam", "Astenosfer", "Hidrosfer"],
+                        answer: 0,
+                        explanation: "Kerak bumi merupakan lapisan paling luar bumi dan permukaannya menjadi tempat terjadinya proses geologi, kehidupan, dan aktivitas manusia."
+                    }
+                ]
+            },
+            {
+                level: 2,
+                title: "Batuan Penyusun Litosfer",
+                mode: "snake-ladder",
+                board: {
+                    size: 10,
+                    ladders: [
+                        { from: 2, to: 5 },
+                        { from: 4, to: 8 },
+                        { from: 7, to: 9 }
+                    ],
+                    snakes: [
+                        { from: 6, to: 2 },
+                        { from: 8, to: 3 },
+                        { from: 10, to: 1 }
+                    ]
+                },
+                questions: [
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batuan yang terbentuk dari pendinginan magma atau lava adalah...",
+                        options: ["Batuan beku", "Batuan sedimen", "Batuan metamorf", "Batuan kapur"],
+                        answer: 0,
+                        explanation: "Batuan beku terbentuk dari pembekuan magma atau lava pada kondisi suhu tertentu di bawah atau di atas permukaan bumi."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Contoh batuan beku dalam yang umum dijumpai adalah...",
+                        options: ["Basalt", "Granit", "Batu apung", "Breksi"],
+                        answer: 1,
+                        explanation: "Granit adalah contoh batuan beku dalam karena membeku di dalam bumi sehingga kristalnya besar dan kasar."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batu apung termasuk jenis batuan beku...",
+                        options: ["Dalam", "Korok", "Luar", "Metamorf"],
+                        answer: 2,
+                        explanation: "Batu apung terbentuk dari lava yang mendingin dengan cepat di permukaan bumi, sehingga termasuk batuan beku luar."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batuan yang terbentuk dari hasil pelapukan, pengangkutan, dan pengendapan material adalah...",
+                        options: ["Batuan sedimen", "Batuan beku", "Batuan metamorf", "Magma"],
+                        answer: 0,
+                        explanation: "Batuan sedimen terbentuk melalui proses pelapukan, erosi, transportasi, dan sedimentasi material batuan."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Contoh batuan sedimen klastik adalah...",
+                        options: ["Batu pasir", "Marmer", "Kuarsit", "Basalt"],
+                        answer: 0,
+                        explanation: "Batu pasir merupakan batuan sedimen klastik karena terbentuk dari fragmen batuan yang terendapkan."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batuan yang berubah bentuk karena suhu dan tekanan tinggi disebut...",
+                        options: ["Batuan metamorf", "Batuan beku", "Batuan sedimen", "Lava"],
+                        answer: 0,
+                        explanation: "Batuan metamorf atau malihan adalah batuan asal yang mengalami perubahan sifat akibat suhu dan tekanan tinggi."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Marmer merupakan hasil perubahan dari batuan...",
+                        options: ["Gamping atau kapur", "Basalt", "Granit", "Batu bara"],
+                        answer: 0,
+                        explanation: "Marmer terbentuk dari batu kapur atau gamping yang mengalami metamorfosis karena tekanan dan suhu tinggi."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batuan sedimen organik yang terbentuk dari sisa tumbuhan purba adalah...",
+                        options: ["Batu bara", "Breksi", "Basalt", "Kuarsit"],
+                        answer: 0,
+                        explanation: "Batu bara terbentuk dari sisa tumbuhan purba yang tertimbun dan mengalami proses geologi dalam waktu lama."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batuan yang tersusun oleh fragmen-fragmen batuan bersudut tajam dan terikat satu sama lain disebut...",
+                        options: ["Breksi", "Konglomerat", "Batu pasir", "Marmer"],
+                        answer: 0,
+                        explanation: "Breksi memiliki fragmen-fragmen batuan berbentuk sudut tajam yang terikat satu sama lain."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Proses dinamis yang mengubah batuan beku, sedimen, dan metamorf menjadi bentuk lain secara terus-menerus disebut...",
+                        options: ["Siklus batuan", "Tektonisme", "Abrasi", "Erosi"],
+                        answer: 0,
+                        explanation: "Siklus batuan adalah proses perubahan batuan dari satu jenis ke jenis lain secara berulang melalui pelapukan, sedimentasi, metamorfosis, dan peleburan."
+                    }
+                ]
+            },
+            {
+                level: 3,
+                title: "Siklus Batuan",
+                questions: [
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Siklus batuan berlangsung terus-menerus karena batuan dapat berubah melalui proses...",
+                        options: ["Pelapukan, pengendapan, metamorfosis, dan peleburan", "Pembekuan semata", "Penguapan saja", "Penghancuran bumi"],
+                        answer: 0,
+                        explanation: "Siklus batuan melibatkan pelapukan, sedimentasi, metamorfosis, dan peleburan kembali menjadi magma."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Proses hancurnya batuan di permukaan bumi karena pengaruh cuaca, air, dan organisme disebut...",
+                        options: ["Pelapukan", "Erosi", "Sedimentasi", "Tektonisme"],
+                        answer: 0,
+                        explanation: "Pelapukan adalah proses penghancuran dan perubahan batuan di permukaan bumi tanpa memindahkan materialnya."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Material hasil pelapukan yang terbawa oleh air atau angin dan diendapkan di tempat lain disebut...",
+                        options: ["Sedimen", "Magma", "Lava", "Mineral"],
+                        answer: 0,
+                        explanation: "Sedimen merupakan material hasil pelapukan yang terbawa dan diendapkan di tempat lain."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Magma yang keluar ke permukaan bumi dan mengalir sebagai cairan panas disebut...",
+                        options: ["Lava", "Sedimen", "Mineral", "Konglomerat"],
+                        answer: 0,
+                        explanation: "Lava adalah magma yang sudah mencapai permukaan bumi melalui erupsi gunung api."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batuan beku yang membeku cepat di permukaan bumi biasanya memiliki tekstur...",
+                        options: ["Kristal besar dan kasar", "Kristal halus dan kecil", "Tidak bertekstur sama sekali", "Berlapis-lapis"],
+                        answer: 1,
+                        explanation: "Pendinginan cepat menghasilkan kristal yang kecil dan tekstur halus, seperti pada basalt."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batuan yang terbentuk dari pengendapan material organik dan anorganik dalam waktu lama disebut...",
+                        options: ["Batuan sedimen", "Batuan beku", "Batuan metamorf", "Batuan dasar"],
+                        answer: 0,
+                        explanation: "Batuan sedimen terbentuk dari endapan material hasil pelapukan,organik, atau kimia yang tertimbun lama."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Proses pergerakan material hasil pelapukan dari satu tempat ke tempat lain disebut...",
+                        options: ["Erosi", "Pelapukan", "Metamorfosis", "Vulkanisme"],
+                        answer: 0,
+                        explanation: "Erosi adalah proses transportasi material hasil pelapukan oleh air, angin, atau gletser."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Apa yang terjadi pada batuan jika mendapat tekanan dan suhu tinggi dalam waktu lama?",
+                        options: ["Batuan berubah menjadi metamorf", "Batuan tetap sama", "Batuan langsung mencair menjadi lava", "Batuan berubah menjadi air"],
+                        answer: 0,
+                        explanation: "Tekanan dan suhu tinggi dapat mengubah batuan asal menjadi batuan metamorf tanpa mencair sepenuhnya."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batuan yang terbentuk dari pengendapan garam atau mineral yang mengendap dari larutan disebut batuan sedimen...",
+                        options: ["Kimiawi", "Klastik", "Organik", "Magma"],
+                        answer: 0,
+                        explanation: "Batuan sedimen kimiawi terbentuk dari endapan mineral yang terlarut lalu mengendap secara kimiawi."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Salah satu contoh batuan sedimen kimiawi adalah...",
+                        options: ["Batu kapur", "Basalt", "Granit", "Marmer"],
+                        answer: 0,
+                        explanation: "Batu kapur dapat terbentuk dari pengendapan mineral kalsium karbonat dalam lingkungan tertentu."
+                    }
+                ]
+            },
+            {
+                level: 4,
+                title: "Lempeng Tektonik",
+                questions: [
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Teori pergerakan benua dipelopori oleh...",
+                        options: ["Alfred Wegener", "Charles Darwin", "Isaac Newton", "Galileo Galilei"],
+                        answer: 0,
+                        explanation: "Alfred Wegener adalah ilmuwan yang mengemukakan teori tentang pergerakan benua dan konsep Pangea."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Alasan utama lempeng tektonik bergerak adalah adanya...",
+                        options: ["Arus konveksi dalam mantel bumi", "Gaya tarik bulan", "Pengaruh angin muson", "Perubahan musim"],
+                        answer: 0,
+                        explanation: "Arus konveksi di mantel bumi menjadi sumber tenaga yang menggerakkan lempeng litosfer."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batas lempeng yang terbentuk ketika dua lempeng saling menjauh disebut batas...",
+                        options: ["Divergen", "Konvergen", "Transform", "Subduksi"],
+                        answer: 0,
+                        explanation: "Pada batas divergen, dua lempeng bergerak saling menjauh dan pada umumnya membentuk pematang tengah samudra."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batas lempeng yang terbentuk ketika dua lempeng saling bertabrakan disebut batas...",
+                        options: ["Konvergen", "Divergen", "Transform", "Ekstrusif"],
+                        answer: 0,
+                        explanation: "Pada batas konvergen, lempeng saling bertabrakan dan dapat membentuk gunung, palung, serta gempa."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Batas lempeng yang bergerak secara horizontal dan saling bergesekan disebut batas...",
+                        options: ["Transform", "Konvergen", "Divergen", "Patahan"],
+                        answer: 0,
+                        explanation: "Batas transform terjadi ketika lempeng bergerak secara horizontal dan saling bergesekan, seperti pada sesar San Andreas."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Indonesia terletak pada pertemuan tiga lempeng besar dunia, yaitu...",
+                        options: ["Eurasia, Indo-Australia, dan Pasifik", "Afrika, Amerika, dan Antartika", "Nazca, Cocos, dan Eurasia", "Arab, Pasifik, dan Afrika"],
+                        answer: 0,
+                        explanation: "Indonesia berada di zona pertemuan lempeng Eurasia, Indo-Australia, dan Pasifik yang membuat wilayah ini sangat aktif secara geologi."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Gejala yang sering muncul pada batas konvergen adalah...",
+                        options: ["Pegunungan, gempa bumi, dan palung laut", "Hutan hujan tropis", "Padang pasir luas", "Danau besar"],
+                        answer: 0,
+                        explanation: "Batas konvergen umumnya menghasilkan pegunungan, palung laut, dan gempa bumi karena lempeng saling bertabrakan."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Pematang Tengah Atlantik merupakan contoh bentuk dari batas...",
+                        options: ["Divergen", "Konvergen", "Transform", "Sedimentasi"],
+                        answer: 0,
+                        explanation: "Pematang Tengah Atlantik terbentuk karena dua lempeng saling menjauh, sehingga merupakan contoh batas divergen."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Subduksi terjadi ketika...",
+                        options: ["Lempeng samudra menunjam ke bawah lempeng benua", "Dua lempeng saling menjauh", "Lempeng bergesekan horizontal", "Lempeng tidak bergerak"],
+                        answer: 0,
+                        explanation: "Subduksi adalah proses ketika lempeng samudra yang lebih padat menunjam ke bawah lempeng benua atau lempeng lain."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Pergerakan lempeng tektonik berperan besar dalam pembentukan...",
+                        options: ["Pegunungan, palung laut, dan jalur gempa", "Iklim hangat sepanjang tahun", "Musim hujan berkepanjangan", "Arah pembelokan angin"],
+                        answer: 0,
+                        explanation: "Aktivitas lempeng mengubah bentuk permukaan bumi dan membentuk fitur geologi seperti pegunungan, palung, dan zona gempa."
+                    }
+                ]
+            },
+            {
+                level: 5,
+                title: "Tektonisme & Gejala Geologi",
+                questions: [
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Getaran bumi yang merambat melalui batuan karena pelepasan energi di dalam bumi disebut...",
+                        options: ["Gempa bumi", "Erosi", "Sedimentasi", "Pelapukan"],
+                        answer: 0,
+                        explanation: "Gempa bumi adalah getaran yang merambat melalui bumi akibat pelepasan energi dari aktivitas tektonik."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Titik di dalam bumi tempat gempa dimulai disebut...",
+                        options: ["Hiposentrum", "Episentrum", "Kawah", "Seismograf"],
+                        answer: 0,
+                        explanation: "Hiposentrum adalah titik awal gempa di dalam bumi, sedangkan episentrum adalah titik di permukaan bumi yang berada tepat di atasnya."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Wilayah di sekitar Samudra Pasifik yang banyak terdapat gunung api aktif dan gempa disebut...",
+                        options: ["Cincin Api Pasifik", "Sabuk Alpina", "Lempeng Eurasia", "Dangkalan Sunda"],
+                        answer: 0,
+                        explanation: "Cincin Api Pasifik adalah jalur aktivitas vulkanik dan seismik yang melingkupi Samudra Pasifik, termasuk Indonesia."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Perubahan bentuk kulit bumi akibat tenaga endogen disebut...",
+                        options: ["Tektonisme", "Vulkanisme", "Eksogenisme", "Abrasi"],
+                        answer: 0,
+                        explanation: "Tektonisme adalah proses perubahan bentuk dan posisi kulit bumi akibat tenaga endogen dari dalam bumi."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Lipatan dan patahan pada batuan merupakan gejala dari...",
+                        options: ["Tektonisme", "Pelapukan", "Sedimentasi", "Pengikisan"],
+                        answer: 0,
+                        explanation: "Lipatan dan patahan adalah bentuk perubahan struktur batuan akibat tekanan dan deformasi tektonik."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Jika terjadi gempa bumi di sekolah, tindakan paling aman adalah...",
+                        options: ["Berlindung di bawah meja dan menjauh dari kaca", "Lari ke lift", "Berdiri di dekat jendela", "Naik ke atap gedung"],
+                        answer: 0,
+                        explanation: "Saat gempa, kita harus segera berlindung di bawah meja yang kuat, menjauh dari kaca, dan kemudian menuju titik kumpul."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Tsunami dapat terjadi ketika gempa bumi terjadi di...",
+                        options: ["Dasar laut", "Padang rumput", "Pegunungan", "Pusat kota"],
+                        answer: 0,
+                        explanation: "Gempa bumi bawah laut dapat mengganggu air laut dan memicu terbentuknya gelombang tsunami."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Gunung api aktif dapat meletus karena...",
+                        options: ["Tekanan magma yang semakin besar", "Hujan terus-menerus", "Pergantian musim", "Pergerakan angin"],
+                        answer: 0,
+                        explanation: "Magma menghasilkan gas dan tekanan yang dapat memicu erupsi jika tekanan di dalam gunung api meningkat."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Fenomena vulkanisme berhubungan erat dengan...",
+                        options: ["Aktivitas magma di bawah permukaan bumi", "Perubahan cuaca harian", "Pengendapan sedimentasi di sungai", "Gelombang pasang laut"],
+                        answer: 0,
+                        explanation: "Vulkanisme adalah aktivitas magma yang naik ke permukaan bumi dan dapat membentuk gunung api serta material vulkanik."
+                    },
+                    {
+                        type: "Pilihan Ganda",
+                        question: "Mitigasi bencana geologi yang baik dapat dilakukan dengan cara...",
+                        options: ["Memahami tanda-tanda bahaya dan menyiapkan jalur evakuasi", "Menutup semua informasi mengenai gempa", "Menyimpan alat berat di rumah", "Memburu daerah rawan bencana"],
+                        answer: 0,
+                        explanation: "Mitigasi penting agar masyarakat siap menghadapi gempa, erupsi, atau tsunami dengan tindakan yang tepat dan cepat."
+                    }
+                ]
+            }
+        ];
+
+        function updateLogoForSlide(slideNum) {
+            const logo = document.querySelector('.top-right-logo');
+            if (!logo) return;
+
+            if (slideNum === 1) {
+                logo.classList.add('hero-logo');
+            } else {
+                logo.classList.remove('hero-logo');
+            }
+        }
+
+        // Navigasi Antar Slide
+        function goToSlide(slideNum) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById(`slide${slideNum}`).classList.add('active');
+            updateLogoForSlide(slideNum);
+
+            // Kontrol status bar header
+            if (slideNum > 1 && slideNum < 7) {
+                document.getElementById('userStatusBar').classList.remove('hidden');
+            } else {
+                document.getElementById('userStatusBar').classList.add('hidden');
+            }
+
+            if (slideNum === 4) {
+                switchMaterialTab(1);
+            } else if (slideNum === 2) {
+                renderAvatarChoices();
+            } else if (slideNum === 5) {
+                renderLevelMap();
+            } else if (slideNum === 6) {
+                loadQuestion();
+            } else if (slideNum === 7) {
+                populateCertificate();
+            }
+        }
+
+        // Simpan Identitas & Pilih Avatar Acak
+        function saveIdentityAndNext() {
+            const name = document.getElementById('inputName').value.trim();
+            const classRoom = document.getElementById('inputClass').value.trim();
+            const school = document.getElementById('inputSchool').value.trim();
+
+            if (!name || !classRoom || !school) {
+                alert("Mohon lengkapi Nama, Kelas, dan Asal Sekolah terlebih dahulu!");
+                return;
+            }
+
+            userData.name = name;
+            userData.classRoom = classRoom;
+            userData.school = school;
+            initializeShuffledGameSession();
+
+            const selectedAvatar = avatarsList[userData.selectedAvatarIndex];
+            userData.avatar = selectedAvatar;
+
+            document.getElementById('avatarIcon').className = `avatar-sprite identity-avatar-sprite ${selectedAvatar.icon}`;
+            document.getElementById('avatarTitle').innerText = selectedAvatar.title;
+            document.getElementById('barAvatar').className = `avatar-sprite ${selectedAvatar.icon}`;
+            document.getElementById('barAvatar').title = selectedAvatar.title;
+
+            // Update status bar
+            document.getElementById('barName').innerText = name;
+            document.getElementById('barSchool').innerText = school;
+
+            goToSlide(3);
+        }
+
+        // Tab Uraian Materi (Slide 4)
+        function switchMaterialTab(tabIdx) {
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.getElementById(`tabBtn${i}`);
+                if (i === tabIdx) {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-orange-500 text-white transition shadow-md";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 transition hover:bg-slate-700";
+                }
+            }
+
+            const contentBox = document.getElementById('materialContent');
+            const referencesBlock = `
+                <div class="mt-6 rounded-xl border border-slate-700 bg-slate-900/50 p-3">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300 mb-2">Sumber Referensi</p>
+                    <ul class="space-y-1 text-xs text-slate-300">
+                        <li><a href="https://www.studiobelajar.com/litosfer/" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:text-cyan-200 underline">StudioBelajar – Litosfer</a></li>
+                        <li><a href="https://www.zenius.net/blog/pengertian-litosfer/" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:text-cyan-200 underline">Zenius – Pengertian Litosfer</a></li>
+                        <li><a href="https://www.ruangguru.com/blog/mengenal-lapisan-litosfer-bumi" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:text-cyan-200 underline">Ruangguru – Mengenal Lapisan Litosfer Bumi</a></li>
+                        <li><a href="https://www.significados.com/litosfera/" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:text-cyan-200 underline">Significados – Litosfera</a></li>
+                    </ul>
+                </div>
+            `;
+            const materials = [
+                `
+                    <h3 class="font-bold text-orange-400 text-lg mb-2"><i class="fa-solid fa-layer-group mr-2"></i> 1. Struktur Lapisan Bumi</h3>
+                    <div class="mt-3 mb-4 overflow-hidden rounded-xl border border-slate-700 bg-slate-900/60">
+                        <img src="./assets/materi 1.jpg" alt="Materi 1" class="w-full h-auto object-contain">
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        <b>Litosfer</b> adalah lapisan batuan paling luar bumi yang terdiri atas <b>kerak bumi</b> dan <b>bagian atas mantel bumi</b>. Kerak bumi terbagi menjadi <b>kerak benua</b> yang lebih tebal dan kaya granit, serta <b>kerak samudra</b> yang lebih tipis dan didominasi batuan basalt. Di bawah kerak terdapat <b>mantel bumi</b> yang masih bersifat padat pada bagian atas tetapi lebih plastis di bagian bawah, sehingga arus konveksi di dalamnya mendorong pergerakan lempeng. Lapisan terdalam, yaitu <b>inti bumi</b>, tersusun oleh besi dan nikel dengan suhu sangat tinggi dan berperan sebagai sumber panas internal bumi.
+                    </p>
+                `,
+                `
+                    <h3 class="font-bold text-orange-400 text-lg mb-2"><i class="fa-solid fa-gem mr-2"></i> 2. Batuan Penyusun Litosfer</h3>
+                    <div class="mt-3 mb-4 overflow-hidden rounded-xl border border-slate-700 bg-slate-900/60">
+                        <img src="./assets/materi 2.jpg" alt="Materi 2" class="w-full h-auto object-contain">
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Litosfer dibentuk oleh tiga jenis batuan utama, yaitu:
+                        <br>• <b>Batuan Beku:</b> Terbentuk ketika magma atau lava mendingin dan membeku. Contohnya granit, basalt, dan batu apung.
+                        <br>• <b>Batuan Sedimen:</b> Terbentuk dari hasil pelapukan, erosi, dan pengendapan material batuan. Contohnya batu pasir, batu kapur, dan konglomerat.
+                        <br>• <b>Batuan Metamorf:</b> Terbentuk ketika batuan lama berubah bentuk karena tekanan dan suhu tinggi. Contohnya marmer, sekis, dan kuarsit.
+                        <br><br>Jenis batuan ini sangat penting karena menjadi sumber mineral, bahan bangunan, dan penanda proses geologis yang terjadi di bumi.
+                    </p>
+                `,
+                `
+                    <h3 class="font-bold text-orange-400 text-lg mb-2"><i class="fa-solid fa-rotate mr-2"></i> 3. Siklus Batuan</h3>
+                    <div class="mt-3 mb-4 overflow-hidden rounded-xl border border-slate-700 bg-slate-900/60">
+                        <img src="./assets/materi 3.jpg" alt="Materi 3" class="w-full h-auto object-contain">
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Siklus batuan adalah proses dinamis yang terus berlangsung di bumi. Magma yang naik ke permukaan akan membeku membentuk batuan beku. Batuan tersebut kemudian mengalami <b>pelapukan</b>, <b>erosi</b>, dan <b>sedimentasi</b> hingga membentuk batuan sedimen. Jika batuan mendapat tekanan dan suhu tinggi dalam waktu lama, batuan akan berubah menjadi <b>batuan metamorf</b>. Selanjutnya, batuan dapat meleleh kembali menjadi magma akibat panas dari dalam bumi. Dengan demikian, siklus batuan menjelaskan perubahan bentuk dan jenis batuan yang terjadi secara terus-menerus.
+                    </p>
+                `,
+                `
+                    <h3 class="font-bold text-orange-400 text-lg mb-2"><i class="fa-solid fa-bridge-water mr-2"></i> 4. Lempeng Tektonik</h3>
+                    <div class="mt-3 mb-4 overflow-hidden rounded-xl border border-slate-700 bg-slate-900/60">
+                        <img src="./assets/materi 4.jpg" alt="Materi 4" class="w-full h-auto object-contain">
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Litosfer bukan lapisan yang utuh, melainkan terpecah menjadi beberapa <b>lempeng tektonik</b> yang kaku dan bergerak di atas lapisan astenosfer yang lebih lunak. Teori tektonik lempeng menjelaskan bahwa gerakan lempeng terjadi karena <b>arus konveksi</b> di dalam mantel bumi. Pergerakan ini dibedakan menjadi tiga jenis, yaitu <b>batas divergen</b> (lempeng saling menjauh), <b>batas konvergen</b> (lempeng saling bertabrakan), dan <b>batas transform</b> (lempeng bergesekan secara horizontal). Di Indonesia, pertemuan tiga lempeng besar—<b>Eurasia, Indo-Australia, dan Pasifik</b>—menyebabkan wilayah ini sangat aktif secara geologi.
+                    </p>
+                `,
+                `
+                    <h3 class="font-bold text-orange-400 text-lg mb-2"><i class="fa-solid fa-volcano mr-2"></i> 5. Tektonisme & Gejala Geologi</h3>
+                    <div class="mt-3 mb-4 overflow-hidden rounded-xl border border-slate-700 bg-slate-900/60">
+                        <img src="./assets/materi 5.jpg" alt="Materi 5" class="w-full h-auto object-contain">
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        <b>Tektonisme</b> adalah proses perubahan bentuk dan posisi kulit bumi akibat tenaga endogen dari dalam bumi. Gejala yang muncul bisa berupa <b>lipatan</b> dan <b>patahan</b>, serta aktivitas <b>gempa bumi</b> dan <b>vulkanisme</b>. Wilayah dengan aktivitas lempeng yang tinggi, seperti Indonesia, sering mengalami gempa bumi, terbentuknya gunung api, dan jalur pegunungan. Oleh karena itu, pemahaman tentang litosfer tidak hanya penting untuk geografi, tetapi juga untuk mitigasi bencana dan pemanfaatan sumber daya alam secara bijak.
+                    </p>
+                `
+            ];
+
+            contentBox.innerHTML = materials[tabIdx - 1] + referencesBlock;
+        }
+
+        // Logika Game & Level (Slide 5)
+        const levelMapDetails = [
+            { icon: "fa-layer-group", shortTitle: "Litosfer", description: "Struktur Bumi", color: "emerald" },
+            { icon: "fa-gem", shortTitle: "Batuan", description: "Penyusun Litosfer", color: "amber" },
+            { icon: "fa-rotate", shortTitle: "Siklus", description: "Siklus Batuan", color: "cyan" },
+            { icon: "fa-arrows-left-right", shortTitle: "Lempeng", description: "Lempeng Tektonik", color: "orange" },
+            { icon: "fa-volcano", shortTitle: "Tektonisme", description: "Gejala Geologi", color: "rose" }
+        ];
+        const levelMissionNames = [
+            "Misi Struktur Bumi",
+            "Misi Ahli Mineral",
+            "Misi Penyelidik Siklus",
+            "Misi Ahli Pergerakan Bumi",
+            "Misi Ahli Gunung Api"
+        ];
+        const levelThemeNames = [
+            "level-theme-structure",
+            "level-theme-rock",
+            "level-theme-cycle",
+            "level-theme-plates",
+            "level-theme-tectonism"
+        ];
+
+        function renderLevelMap() {
+            const map = document.getElementById('levelMap');
+            const colorClasses = {
+                emerald: "border-orange-300/70 bg-orange-950/80 text-orange-100",
+                amber: "border-amber-300/70 bg-amber-950/80 text-amber-100",
+                cyan: "border-cyan-300/70 bg-cyan-950/80 text-cyan-100",
+                orange: "border-orange-300/70 bg-orange-950/80 text-orange-100",
+                rose: "border-rose-300/70 bg-rose-950/80 text-rose-100"
+            };
+
+            map.innerHTML = levelMapDetails.map((detail, index) => {
+                const level = index + 1;
+                const isUnlocked = level <= userData.currentLevel;
+                const isActive = level === userData.currentLevel;
+                const isCompleted = level < userData.currentLevel;
+                const stateClass = isUnlocked ? colorClasses[detail.color] : "border-slate-500/50 bg-slate-950/70 text-slate-400";
+                const stateIcon = isCompleted ? "fa-check" : isUnlocked ? detail.icon : "fa-lock";
+                const stateText = isCompleted ? "Selesai" : isUnlocked ? "Mulai" : "Terkunci";
+
+                return `
+                    <button type="button" class="level-card ${stateClass} ${isActive ? 'ring-2 ring-amber-300 ring-offset-2 ring-offset-slate-900' : ''} rounded-xl border p-3 text-left cursor-pointer ${isUnlocked ? '' : 'opacity-75'}" onclick="selectLevel(${level})" aria-label="${isUnlocked ? `Buka level ${level}: ${detail.description}` : `Level ${level} terkunci, selesaikan level sebelumnya terlebih dahulu`}">
+                        <span class="flex items-center justify-between mb-2">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-black/25 text-lg"><i class="fa-solid ${stateIcon}"></i></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider">L${level}</span>
+                        </span>
+                        <strong class="block text-xs md:text-sm">${detail.shortTitle}</strong>
+                        <span class="block text-[10px] opacity-80 mt-0.5">${detail.description}</span>
+                        <span class="block text-[9px] uppercase tracking-wider font-bold mt-2 opacity-75">${stateText}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectLevel(level) {
+            if (level > userData.currentLevel) {
+                alert(`Level ${level} masih terkunci. Selesaikan Level ${userData.currentLevel} terlebih dahulu.`);
+                return;
+            }
+
+            userData.currentLevel = level;
+            userData.currentQuestionIdx = 0;
+            goToSlide(6);
+        }
+
+        function showLevelUpNotification(level, title) {
+            const notification = document.getElementById('levelUpNotification');
+            document.getElementById('levelUpMessage').innerText = `Level ${level}: ${title} telah terbuka!`;
+            notification.classList.add('visible');
+            clearTimeout(window.levelUpNotificationTimer);
+            window.levelUpNotificationTimer = setTimeout(() => {
+                notification.classList.remove('visible');
+            }, 2600);
+        }
+
+        function openLevelConfirmModal() {
+            const overlay = document.getElementById('levelConfirmOverlay');
+            const text = document.getElementById('levelConfirmText');
+            const nextLevel = userData.currentLevel + 1;
+            const continueBtn = document.querySelector('#levelConfirmOverlay .level-confirm-btn.primary');
+            const canAdvance = canAdvanceToNextLevel();
+
+            if (userData.currentLevel === 2) {
+                if (canAdvance) {
+                    text.innerText = `Level 2 selesai. Anda sudah mengumpulkan ${userData.stars} bintang. Apakah Anda ingin melanjutkan ke level ${nextLevel}?`;
+                    continueBtn.disabled = false;
+                    continueBtn.innerHTML = '<i class="fa-solid fa-arrow-right mr-2"></i> Lanjut';
+                } else {
+                    text.innerText = `Level 2 selesai. Untuk lanjut ke level ${nextLevel}, Anda harus mengumpulkan minimal 20 bintang. Saat ini Anda baru punya ${userData.stars} bintang.`;
+                    continueBtn.disabled = true;
+                    continueBtn.innerHTML = '<i class="fa-solid fa-lock mr-2"></i> Belum Bisa Lanjut';
+                }
+            } else {
+                text.innerText = `Level ${userData.currentLevel} selesai. Apakah Anda ingin melanjutkan ke level ${nextLevel}?`;
+                continueBtn.disabled = false;
+                continueBtn.innerHTML = '<i class="fa-solid fa-arrow-right mr-2"></i> Lanjut';
+            }
+
+            overlay.classList.remove('hidden');
+            overlay.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeLevelConfirmModal() {
+            const overlay = document.getElementById('levelConfirmOverlay');
+            overlay.classList.add('hidden');
+            overlay.setAttribute('aria-hidden', 'true');
+        }
+
+        function handleLevelConfirm(shouldContinue) {
+            closeLevelConfirmModal();
+
+            if (shouldContinue && canAdvanceToNextLevel()) {
+                userData.currentLevel += 1;
+                userData.currentQuestionIdx = 0;
+                showLevelUpNotification(userData.currentLevel, gameLevels[userData.currentLevel - 1].title);
+                loadQuestion();
+            } else if (shouldContinue && !canAdvanceToNextLevel()) {
+                alert(`Anda belum memenuhi syarat lanjut level 2. Minimal 20 bintang yang harus terkumpul.`);
+                return;
+            } else {
+                userData.currentQuestionIdx = 0;
+                goToSlide(5);
+            }
+        }
+
+        function loadQuestion() {
+            const currentLvlObj = shuffledGameLevels[userData.currentLevel - 1];
+            const qObj = currentLvlObj.questions[userData.currentQuestionIdx];
+            qObj._categoryAssignments = {};
+            qObj._evaluationComplete = false;
+
+            // Update Header Level
+            document.querySelector('#slide5 #currentLevelBadge').innerText = userData.currentLevel;
+            document.querySelector('#slide5 #levelTitleText').innerText = `Level ${userData.currentLevel}: ${currentLvlObj.title}`;
+            document.getElementById('questionLevelBadge').innerText = userData.currentLevel;
+            document.getElementById('questionLevelTitleText').innerText = `Level ${userData.currentLevel}: ${currentLvlObj.title}`;
+            document.getElementById('questionCounter').innerText = `Soal ${userData.currentQuestionIdx + 1} dari 5`;
+            document.getElementById('questionTypeBadge').innerText = qObj.type || 'Menjodohkan Klasifikasi';
+            document.getElementById('questionText').innerText = qObj.question;
+            document.getElementById('questionKicker').innerText = levelMissionNames[userData.currentLevel - 1];
+            document.getElementById('questionEmblem').innerHTML = `<i class="fa-solid ${levelMapDetails[userData.currentLevel - 1].icon}"></i>`;
+            document.getElementById('questionProgressText').innerText = `${userData.currentQuestionIdx} / ${currentLvlObj.questions.length} selesai`;
+            const questionCard = document.querySelector('#slide6 .anime-question-card');
+            questionCard.classList.remove(...levelThemeNames);
+            questionCard.classList.add(levelThemeNames[userData.currentLevel - 1]);
+            renderLevelMap();
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            const dropZone = document.getElementById('answerDropZone');
+            const feedbackBox = document.getElementById('feedbackMessage');
+            const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+            nextQuestionBtn.classList.add('hidden');
+            nextQuestionBtn.disabled = false;
+            feedbackBox.classList.add('hidden');
+
+            if (currentLvlObj.mode === 'snake-ladder') {
+                document.getElementById('questionTypeBadge').innerText = 'Ular Tangga';
+                document.getElementById('questionKicker').innerText = `Misi ${currentLvlObj.title}`;
+                document.getElementById('questionText').innerText = 'Lempar dadu dan selesaikan papan ular tangga untuk naik level!';
+                renderSnakeLadderLevel(currentLvlObj, optionsContainer, dropZone, feedbackBox, nextQuestionBtn);
+                return;
+            }
+
+            if (qObj.type === 'Mengkategorikan' && Array.isArray(qObj.categories)) {
+                renderCategorizationQuestion(qObj, optionsContainer, dropZone, feedbackBox, nextQuestionBtn);
+                return;
+            }
+
+            // Render opsi untuk mode menjodohkan / pasangan
+            optionsContainer.innerHTML = '';
+            dropZone.className = "border-2 border-dashed border-cyan-400/60 bg-cyan-950/30 rounded-xl p-4 text-center text-sm text-cyan-200 transition";
+            dropZone.innerHTML = '<i class="fa-solid fa-arrows-to-circle text-lg mb-1"></i><span class="block font-semibold">Pasangkan di sini</span><span class="block text-xs text-cyan-300/70">Lepaskan jawaban yang paling sesuai</span>';
+            dropZone.ondragover = event => event.preventDefault();
+            dropZone.ondragenter = () => dropZone.classList.add('border-amber-300', 'bg-amber-950/40');
+            dropZone.ondragleave = () => dropZone.classList.remove('border-amber-300', 'bg-amber-950/40');
+            dropZone.ondrop = event => {
+                event.preventDefault();
+                dropZone.classList.remove('border-amber-300', 'bg-amber-950/40');
+                const selectedIdx = Number(event.dataTransfer.getData('text/plain'));
+                if (!Number.isNaN(selectedIdx)) {
+                    checkAnswer(selectedIdx, qObj.answer, qObj.explanation);
+                }
+            };
+
+            qObj.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "anime-option w-full text-left p-3.5 rounded-xl text-slate-200 text-sm transition flex items-center justify-between group cursor-grab active:cursor-grabbing";
+                btn.innerHTML = `<span class="flex items-center gap-3"><i class="fa-solid fa-link text-cyan-400"></i><span><strong class="block text-[10px] uppercase tracking-wider text-slate-400 mb-0.5">Pasangan ${idx + 1}</strong>${opt}</span></span><i class="fa-solid fa-arrow-right-arrow-left text-xs opacity-0 group-hover:opacity-100 text-cyan-300"></i>`;
+                btn.draggable = true;
+                btn.ondragstart = event => event.dataTransfer.setData('text/plain', idx);
+                btn.addEventListener('pointerdown', event => {
+                    if (event.pointerType !== 'touch') {
+                        return;
+                    }
+                    btn.setPointerCapture(event.pointerId);
+                    btn.dataset.dragIndex = idx;
+                    dropZone.classList.add('border-amber-300', 'bg-amber-950/40');
+                });
+                btn.addEventListener('pointerup', event => {
+                    if (event.pointerType !== 'touch') {
+                        return;
+                    }
+                    const target = document.elementFromPoint(event.clientX, event.clientY);
+                    dropZone.classList.remove('border-amber-300', 'bg-amber-950/40');
+                    if (target && (target === dropZone || dropZone.contains(target))) {
+                        checkAnswer(idx, qObj.answer, qObj.explanation);
+                    }
+                });
+                btn.addEventListener('pointercancel', () => {
+                    dropZone.classList.remove('border-amber-300', 'bg-amber-950/40');
+                });
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function renderCategorizationQuestion(qObj, optionsContainer, dropZone, feedbackBox, nextQuestionBtn) {
+            const categories = qObj.categories;
+            const assignments = qObj._categoryAssignments || {};
+            optionsContainer.className = 'grid grid-cols-2 gap-2 pt-2 items-stretch';
+
+            function syncCategorizationLayout() {
+                optionsContainer.innerHTML = '';
+                qObj.options.forEach((opt, idx) => {
+                    if (assignments[idx] !== undefined) {
+                        return;
+                    }
+
+                    const btn = document.createElement('button');
+                    btn.className = "anime-option w-full text-left p-3.5 rounded-xl text-slate-200 text-sm transition flex items-center justify-between group cursor-grab active:cursor-grabbing";
+                    btn.innerHTML = `<span class="flex items-center gap-3"><i class="fa-solid fa-filter text-amber-400"></i><span>${opt}</span></span><i class="fa-solid fa-arrow-right-arrow-left text-xs opacity-0 group-hover:opacity-100 text-amber-300"></i>`;
+                    btn.draggable = true;
+                    btn.dataset.optionIndex = idx;
+                    btn.ondragstart = event => event.dataTransfer.setData('text/plain', idx);
+                    optionsContainer.appendChild(btn);
+                });
+
+                dropZone.className = "grid grid-cols-1 sm:grid-cols-2 gap-2 border-2 border-dashed border-amber-400/60 bg-amber-950/30 rounded-xl p-2.5 text-sm text-amber-100 transition items-stretch";
+                dropZone.innerHTML = `
+                    <div class="drag-hint">
+                        <i class="fa-solid fa-hand-point-right"></i>
+                        <span>Seret jawaban ke kategori yang sesuai</span>
+                    </div>
+                    ${[...categories].reverse().map((category, reversedIndex) => {
+                        const categoryIdx = categories.length - 1 - reversedIndex;
+                        return `
+                            <div class="category-zone rounded-xl border border-amber-400/40 bg-slate-950/60 p-3" data-category-index="${categoryIdx}">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-[10px] uppercase tracking-wider text-amber-200 font-semibold">${category.title}</span>
+                                    <span class="text-[10px] text-slate-400">${category.correctIndexes.length} pilihan</span>
+                                </div>
+                                <div class="category-items min-h-[52px] rounded-lg border border-dashed border-slate-700 bg-slate-900/60 p-2 space-y-2"></div>
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+
+                dropZone.querySelectorAll('.category-zone').forEach((zone) => {
+                    const categoryIdx = Number(zone.dataset.categoryIndex);
+                    const itemsContainer = zone.querySelector('.category-items');
+
+                    qObj.options.forEach((opt, idx) => {
+                        if (assignments[idx] === categoryIdx) {
+                            const item = document.createElement('div');
+                            item.className = qObj._evaluationComplete
+                                ? (qObj.categories[categoryIdx].correctIndexes.includes(idx)
+                                    ? 'category-item correct rounded-lg border px-2 py-1.5 text-xs'
+                                    : 'category-item incorrect rounded-lg border px-2 py-1.5 text-xs')
+                                : 'bg-emerald-900/70 border-emerald-500/60 text-emerald-100 rounded-lg border px-2 py-1.5 text-xs';
+                            item.dataset.optionIndex = idx;
+                            item.innerText = opt;
+                            itemsContainer.appendChild(item);
+                        }
+                    });
+
+                    zone.ondragover = event => event.preventDefault();
+                    zone.ondragenter = () => zone.classList.add('border-amber-300', 'bg-amber-950/40');
+                    zone.ondragleave = () => zone.classList.remove('border-amber-300', 'bg-amber-950/40');
+                    zone.ondrop = (event) => {
+                        event.preventDefault();
+                        zone.classList.remove('border-amber-300', 'bg-amber-950/40');
+                        const selectedIdx = Number(event.dataTransfer.getData('text/plain'));
+                        if (!Number.isNaN(selectedIdx)) {
+                            processCategorizationDrop(qObj, selectedIdx, categoryIdx, optionsContainer, dropZone, feedbackBox, nextQuestionBtn, syncCategorizationLayout);
+                        }
+                    };
+                });
+
+                const allPlaced = qObj.options.every((_, idx) => qObj._categoryAssignments[idx] !== undefined);
+                if (allPlaced && !qObj._evaluationComplete) {
+                    nextQuestionBtn.classList.remove('hidden');
+                    nextQuestionBtn.disabled = false;
+                    nextQuestionBtn.innerHTML = 'Cek Jawaban <i class="fa-solid fa-check ml-1"></i>';
+                    nextQuestionBtn.onclick = () => evaluateCategorizationQuestion(qObj, optionsContainer, dropZone, feedbackBox, nextQuestionBtn);
+                } else if (qObj._evaluationComplete) {
+                    nextQuestionBtn.classList.remove('hidden');
+                    nextQuestionBtn.disabled = false;
+                    nextQuestionBtn.innerHTML = 'Soal Selanjutnya <i class="fa-solid fa-arrow-right ml-1"></i>';
+                    nextQuestionBtn.onclick = nextQuestion;
+                } else {
+                    nextQuestionBtn.classList.add('hidden');
+                    nextQuestionBtn.onclick = null;
+                }
+            }
+
+            syncCategorizationLayout();
+        }
+
+        const snakeLadderQuestionBank = [
+            { category: "Batuan Beku", q: "Batuan beku yang terbentuk dari pembekuan magma di dalam bumi (dalam kulit bumi) disebut batuan...", options: ["Beku Luar (Efusif)", "Beku Dalam (Intrusif/Plutonik)", "Beku Korok (Hypabyssal)", "Metamorf"], answer: 1, explanation: "Batuan beku intrusif terbentuk dari magma yang membeku di dalam bumi, sehingga kristalnya besar dan teksturnya kasar." },
+            { category: "Batuan Beku", q: "Batuan beku yang memiliki ciri berpori-pori ringan dan dapat terapung di air adalah...", options: ["Obsidian", "Basalt", "Batu Apung (Pumice)", "Granit"], answer: 2, explanation: "Batu apung memiliki pori-pori kecil dan ringan, sehingga dapat terapung di air." },
+            { category: "Batuan Beku", q: "Batu obsidian terbentuk dari pendinginan lava yang sangat cepat sehingga strukturnya menyerupai...", options: ["Kaca/Gelas", "Kristal Kasar", "Lapisan Tanah", "Fosil"], answer: 0, explanation: "Obsidian terbentuk dari lava yang mendingin sangat cepat, sehingga tampak seperti kaca atau gelas." },
+            { category: "Batuan Beku", q: "Batuan beku dalam yang memiliki tekstur kristal kasar dan banyak digunakan sebagai bahan lantai atau meja adalah...", options: ["Andesit", "Granit", "Basalt", "Konglomerat"], answer: 1, explanation: "Granit adalah batuan beku intrusif dengan kristal kasar dan kuat, sering dipakai untuk lantai maupun meja." },
+            { category: "Batuan Sedimen", q: "Batuan sedimen yang terbentuk dari pengendapan hancuran batuan lain secara mekanis disebut sedimen...", options: ["Klastik", "Kimiawi", "Organik", "Pneumatolistis"], answer: 0, explanation: "Sedimen klastik terbentuk dari fragmen batuan yang bergerak dan mengendap secara mekanis." },
+            { category: "Batuan Sedimen", q: "Batu kapur (gamping) yang mengalami pelarutan oleh air hujan dan mengendap kembali di dalam gua membentuk...", options: ["Batu Pasir & Batu Lepung", "Stalaktit & Stalagmit", "Granit & Diorit", "Marmer & Kuarsa"], answer: 1, explanation: "Air hujan yang melarutkan kapur di gua akan mengendap membentuk stalaktit dan stalagmit." },
+            { category: "Batuan Sedimen", q: "Batuan sedimen organik yang terbentuk dari sisa-sisa tumbuhan purba yang tertimbun jutaan tahun adalah...", options: ["Batu Bara", "Batu Garam", "Batu Breksi", "Batu Serpih"], answer: 0, explanation: "Batu bara berasal dari sisa tumbuhan purba yang tertimbun dan mengalami proses geologi dalam waktu sangat lama." },
+            { category: "Batuan Sedimen", q: "Batu yang terdiri dari kerikil-kerikil bersudut tajam yang terikat satu sama lain disebut...", options: ["Konglomerat", "Breksi", "Batu Pasir", "Batu Gamping"], answer: 1, explanation: "Breksi tersusun dari fragmen batuan bersudut tajam yang mengikat satu sama lain." },
+            { category: "Batuan Metamorf", q: "Batuan metamorf (malihan) terbentuk karena adanya pengaruh...", options: ["Erosi dan Pelapukan", "Suhu tinggi dan Tekanan tinggi", "Pembekuan magma cepat", "Pengendapan zat kimia"], answer: 1, explanation: "Batuan metamorf terbentuk saat batuan asal mengalami perubahan akibat suhu tinggi dan tekanan tinggi." },
+            { category: "Batuan Metamorf", q: "Batu marmer merupakan hasil perubahan (metamorfosis) dari batuan asal yaitu...", options: ["Batu Pasir", "Batu Gamping / Kapur", "Granit", "Batu Bara"], answer: 1, explanation: "Marmer adalah hasil metamorfosis batu gamping atau kapur karena tekanan dan suhu tinggi." },
+            { category: "Batuan Metamorf", q: "Batuan metamorf yang bernilai tinggi dan terbentuk dari pemanasan batu bara atau karbon murni adalah...", options: ["Intan", "Batu Sabak", "Gneis", "Kuarsit"], answer: 0, explanation: "Intan terbentuk dari karbon murni yang mengalami pemanasan dan tekanan sangat tinggi di dalam bumi." },
+            { category: "Batuan Metamorf", q: "Batu sabak (slate) merupakan batuan metamorf yang berasal dari batuan sedimen...", options: ["Batu Apung", "Batu Lempung / Serpih", "Konglomerat", "Batu Garam"], answer: 1, explanation: "Batu sabak berasal dari batu lempung atau serpih yang mengalami metamorfosis karena tekanan dan suhu." },
+            { category: "Dinamika Litosfer", q: "Progres perubahan batuan dari batuan beku, sedimen, hingga metamorf secara terus-menerus disebut...", options: ["Erosi Batuan", "Siklus Batuan (Rock Cycle)", "Pelapukan Fisika", "Tektonisme"], answer: 1, explanation: "Siklus batuan menjelaskan perubahan batuan dari satu jenis ke jenis lain secara terus-menerus." },
+            { category: "Dinamika Litosfer", q: "Magma yang telah keluar ke permukaan bumi saat gunung api meletus disebut...", options: ["Lava", "Intrusif", "Stalaktit", "Gneis"], answer: 0, explanation: "Lava adalah magma yang sudah mencapai permukaan bumi saat erupsi gunung api." }
+        ];
+
+        const snakeLadderLadders = [
+            { start: 2, end: 6 },
+            { start: 4, end: 10 },
+            { start: 8, end: 14 },
+            { start: 12, end: 18 },
+            { start: 15, end: 20 }
+        ];
+
+        const snakeLadderSnakes = [
+            { start: 16, end: 7 },
+            { start: 18, end: 9 },
+            { start: 20, end: 5 },
+            { start: 13, end: 3 }
+        ];
+
+        function ensureSnakeQuestionModal() {
+            if (document.getElementById('snakeQuestionModal')) {
+                return;
+            }
+
+            const modal = document.createElement('div');
+            modal.id = 'snakeQuestionModal';
+            modal.style.display = 'none';
+            modal.style.position = 'fixed';
+            modal.style.inset = '0';
+            modal.style.background = 'rgba(2, 6, 23, 0.7)';
+            modal.style.backdropFilter = 'blur(4px)';
+            modal.style.zIndex = '60';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.padding = '1rem';
+            modal.innerHTML = `
+                <div id="snakeModalPanel" style="width:min(92vw, 520px); background:linear-gradient(145deg, #0f172a, #1e293b); border-radius: 18px; border: 2px solid rgba(96,165,250,0.75); box-shadow: 0 22px 50px rgba(59,130,246,0.25); padding: 1.25rem; color:white;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem; margin-bottom:0.75rem; flex-wrap:wrap;">
+                        <div id="snakeModalCategory" style="display:inline-block; padding:0.35rem 0.75rem; border-radius:999px; background:#e8f5e9; color:#14532d; font-size:0.7rem; font-weight:900; letter-spacing:0.08em; text-transform:uppercase;">Batuan Beku</div>
+                        <div id="snakeModalMode" style="display:inline-block; padding:0.35rem 0.75rem; border-radius:999px; background:#dbeafe; color:#1e3a8a; font-size:0.7rem; font-weight:900; letter-spacing:0.08em; text-transform:uppercase;">Soal Siswa</div>
+                    </div>
+                    <div id="snakeModalQuestion" style="font-size:1.05rem; font-weight:800; line-height:1.5; margin-bottom:1rem;">Teks pertanyaan</div>
+                    <div id="snakeModalOptions" style="display:flex; flex-direction:column; gap:0.6rem;"></div>
+                    <div id="snakeModalFeedback" style="display:none; margin-top:0.85rem; padding:0.75rem; border-radius:10px; font-size:0.82rem; font-weight:700; text-align:center;"></div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function getSnakeTileCoords(tileNum, cols = 4, rows = 5, tileSize = 42) {
+            const index = tileNum - 1;
+            const row = Math.floor(index / cols);
+            let col = index % cols;
+            if (row % 2 === 1) {
+                col = cols - 1 - col;
+            }
+            return {
+                x: col * tileSize,
+                y: (rows - 1 - row) * tileSize
+            };
+        }
+
+        function drawSnakeBoard(canvas, state) {
+            const ctx = canvas.getContext('2d');
+            const cols = 4;
+            const rows = 5;
+            const totalTiles = 20;
+            const tileSize = Math.min(canvas.width / cols, canvas.height / rows) * 0.96;
+            const numberSize = Math.max(11, Math.min(18, tileSize * 0.24));
+            const materialLabels = [
+                'Beku', 'Sedimen', 'Metamorf', 'Dinamika',
+                'Metamorf', 'Beku', 'Sedimen', 'Metamorf',
+                'Dinamika', 'Beku', 'Sedimen', 'Metamorf',
+                'Beku', 'Dinamika', 'Sedimen', 'Metamorf',
+                'Beku', 'Metamorf', 'Sedimen', 'Dinamika'
+            ];
+            const materialColors = {
+                Beku: '#a5d6a7',
+                Sedimen: '#fff59d',
+                Metamorf: '#ffcc80',
+                Dinamika: '#d7f9ff'
+            };
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff8e1';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const offsetX = (canvas.width - tileSize * cols) / 2;
+            const offsetY = (canvas.height - tileSize * rows) / 2;
+
+            for (let i = 1; i <= totalTiles; i++) {
+                const coords = getSnakeTileCoords(i, cols, rows, tileSize);
+                const x = offsetX + coords.x;
+                const y = offsetY + coords.y;
+                const label = materialLabels[i - 1];
+                const tileColor = materialColors[label] || '#e2e8f0';
+                ctx.fillStyle = tileColor;
+                ctx.fillRect(x, y, tileSize, tileSize);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(x, y, tileSize, tileSize);
+
+                ctx.fillStyle = '#374151';
+                ctx.font = `700 ${numberSize}px sans-serif`;
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                ctx.fillText(String(i), x + tileSize * 0.12, y + tileSize * 0.08);
+
+                ctx.font = `600 ${Math.max(8, Math.min(11, tileSize * 0.17))}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.fillText(label, x + tileSize / 2, y + tileSize * 0.62);
+            }
+
+            state.players.forEach((player, index) => {
+                const coords = getSnakeTileCoords(player.pos, cols, rows, tileSize);
+                const x = offsetX + coords.x + tileSize / 2 + (index === 0 ? -8 : 8);
+                const y = offsetY + coords.y + tileSize / 2 + (index === 0 ? -8 : 8);
+                ctx.beginPath();
+                ctx.arc(x, y, 11, 0, Math.PI * 2);
+                ctx.fillStyle = player.color;
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#ffffff';
+                ctx.stroke();
+            });
+        }
+
+        function updateSnakeStatusUI(levelObj, state) {
+            const turnText = document.getElementById('snakeTurnText');
+            const turnDot = document.getElementById('snakeTurnDot');
+            const p1Pos = document.getElementById('snakeP1Pos');
+            const p2Pos = document.getElementById('snakeP2Pos');
+            const diceView = document.getElementById('snakeDiceView');
+            const rollBtn = document.getElementById('snakeRollBtn');
+            const currentPlayer = state.players[state.currentPlayerIndex];
+
+            if (turnText) {
+                turnText.textContent = `Giliran: ${currentPlayer.name}`;
+            }
+            if (turnDot) {
+                turnDot.style.background = currentPlayer.color;
+            }
+            if (p1Pos) {
+                p1Pos.textContent = `Petak ${state.players[0].pos}`;
+            }
+            if (p2Pos) {
+                p2Pos.textContent = `Petak ${state.players[1].pos}`;
+            }
+            if (diceView) {
+                diceView.textContent = state.currentRoll || '-';
+            }
+            if (rollBtn) {
+                rollBtn.disabled = state.isRolling || currentPlayer.isAI;
+            }
+        }
+
+        function showSnakeQuestionModal(levelObj, state) {
+            ensureSnakeQuestionModal();
+            const modal = document.getElementById('snakeQuestionModal');
+            const modalPanel = document.getElementById('snakeModalPanel');
+            const categoryEl = document.getElementById('snakeModalCategory');
+            const modeEl = document.getElementById('snakeModalMode');
+            const questionEl = document.getElementById('snakeModalQuestion');
+            const optionsEl = document.getElementById('snakeModalOptions');
+            const feedbackEl = document.getElementById('snakeModalFeedback');
+            const currentPlayer = state.players[state.currentPlayerIndex];
+            const qObj = snakeLadderQuestionBank[Math.floor(Math.random() * snakeLadderQuestionBank.length)];
+            state.currentQuestion = qObj;
+
+            categoryEl.textContent = qObj.category;
+            modeEl.textContent = currentPlayer.isAI ? 'Soal Bot AI' : 'Soal Siswa';
+            modeEl.style.background = currentPlayer.isAI ? '#fee2e2' : '#dbeafe';
+            modeEl.style.color = currentPlayer.isAI ? '#7f1d1d' : '#1e3a8a';
+            modalPanel.style.borderColor = currentPlayer.isAI ? 'rgba(239,68,68,0.85)' : 'rgba(96,165,250,0.75)';
+            modalPanel.style.boxShadow = currentPlayer.isAI ? '0 22px 50px rgba(239,68,68,0.30)' : '0 22px 50px rgba(59,130,246,0.25)';
+            questionEl.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                    <div style="font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:#fbbf24; font-weight:800;">Hasil Dadu</div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.75rem 0.9rem; border-radius:12px; background:rgba(15,23,42,0.8); border:1px solid rgba(251,191,36,0.55);">
+                        <div>
+                            <div style="font-size:0.72rem; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.08em;">Dadu</div>
+                            <div style="font-size:1.7rem; font-weight:900; line-height:1; color:#f8fafc;">${state.currentRoll || '-'}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.72rem; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.08em;">Posisi</div>
+                            <div style="font-size:1.3rem; font-weight:900; color:#fbbf24;">Petak ${currentPlayer.pos}</div>
+                        </div>
+                    </div>
+                    <div style="padding:0.65rem 0.85rem; border-radius:10px; background:rgba(8,47,73,0.38); border:1px solid rgba(34,211,238,0.4); color:#d7f9ff; font-size:0.82rem; font-weight:700;">
+                        Materi: <span style="color:#fbbf24;">${currentPlayer.pos ? (['Beku', 'Sedimen', 'Metamorf', 'Dinamika'][ (currentPlayer.pos - 1) % 4 ] || 'Dinamika') : 'Dinamika'}</span>
+                    </div>
+                    <div style="margin-top:0.2rem; font-size:0.9rem; font-weight:800; color:#f8fafc;">${qObj.q}</div>
+                </div>
+            `;
+            optionsEl.innerHTML = '';
+            feedbackEl.style.display = 'none';
+            feedbackEl.className = '';
+            feedbackEl.textContent = '';
+
+            qObj.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = opt;
+                btn.style.display = 'block';
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.padding = '0.75rem 0.85rem';
+                btn.style.borderRadius = '10px';
+                btn.style.border = '2px solid #e2e8f0';
+                btn.style.background = '#f8fafc';
+                btn.style.color = '#0f172a';
+                btn.style.fontWeight = '700';
+                btn.style.cursor = 'pointer';
+                btn.onclick = () => {
+                    const isCorrect = idx === qObj.answer;
+                    handleSnakeAnswer(levelObj, state, isCorrect, idx);
+                };
+                optionsEl.appendChild(btn);
+            });
+
+            modal.style.display = 'flex';
+
+            setTimeout(() => {
+                const optionButtons = optionsEl.querySelectorAll('button');
+                optionButtons.forEach(button => {
+                    button.style.transition = 'all 0.2s ease';
+                });
+            }, 30);
+
+            if (currentPlayer.isAI) {
+                const correctChoice = qObj.answer;
+                const wrongChoices = qObj.options.map((_, index) => index).filter(index => index !== correctChoice);
+                const shouldPickCorrect = Math.random() < 0.8;
+                const chosenIdx = shouldPickCorrect ? correctChoice : wrongChoices[Math.floor(Math.random() * wrongChoices.length)];
+                setTimeout(() => {
+                    const btns = optionsEl.querySelectorAll('button');
+                    if (btns[chosenIdx]) {
+                        btns[chosenIdx].style.background = '#bbdefb';
+                        btns[chosenIdx].style.borderColor = '#1e88e5';
+                    }
+                    setTimeout(() => handleSnakeAnswer(levelObj, state, chosenIdx === qObj.answer, chosenIdx), 600);
+                }, 1000);
+            }
+        }
+
+        function handleSnakeAnswer(levelObj, state, isCorrect, chosenIndex) {
+            const modal = document.getElementById('snakeQuestionModal');
+            const feedbackEl = document.getElementById('snakeModalFeedback');
+            const currentPlayer = state.players[state.currentPlayerIndex];
+            const currentQuestion = state.currentQuestion;
+            const currentPos = currentPlayer.pos;
+            const initialPos = state.initialRollPos;
+            const chosenText = currentQuestion?.options?.[chosenIndex] || 'Pilihan yang dipilih';
+            const correctText = currentQuestion?.options?.[currentQuestion.answer] || 'Jawaban yang benar';
+            const explanationText = currentQuestion?.explanation || 'Jawaban ini sesuai dengan konsep materi yang sedang dipelajari.';
+            let message = '';
+            let nextPos = currentPos;
+
+            if (!currentPlayer.isAI && userData.currentLevel === 2) {
+                if (isCorrect) {
+                    userData.stars += 4;
+                }
+            }
+            updateProgressHud();
+
+            if (isCorrect) {
+                feedbackEl.className = 'feedback-message feedback-correct';
+                feedbackEl.style.display = 'block';
+                feedbackEl.innerHTML = `<strong>${currentPlayer.name}:</strong> Jawaban benar! ${explanationText}`;
+                if (!currentPlayer.isAI && userData.currentLevel === 2) {
+                    feedbackEl.innerHTML += ` <span class="text-amber-300">(+4 bintang)</span>`;
+                }
+
+                const ladder = snakeLadderLadders.find(item => item.start === currentPos);
+                if (ladder) {
+                    nextPos = ladder.end;
+                    currentPlayer.pos = ladder.end;
+                    message = `Menaiki tangga dari petak ${ladder.start} ke petak ${ladder.end}.`;
+                } else {
+                    nextPos = currentPos;
+                    message = 'Tetap di posisi saat ini.';
+                }
+            } else {
+                feedbackEl.className = 'feedback-message feedback-wrong';
+                feedbackEl.style.display = 'block';
+                const snake = snakeLadderSnakes.find(item => item.start === currentPos);
+                if (snake) {
+                    nextPos = snake.end;
+                    currentPlayer.pos = snake.end;
+                    message = `Jawaban salah! Pilihan Anda <strong>${chosenText}</strong> tidak tepat. Anda terdorong turun dari petak ${snake.start} ke petak ${snake.end}.`;
+                } else {
+                    currentPlayer.pos = initialPos;
+                    nextPos = initialPos;
+                    message = `Jawaban salah! Pilihan Anda <strong>${chosenText}</strong> tidak tepat. Anda kembali ke petak ${initialPos}.`;
+                }
+
+                message += ` Jawaban yang benar adalah <strong>${correctText}</strong>. ${explanationText}`;
+            }
+
+            const optionButtons = document.querySelectorAll('#snakeModalOptions button');
+            optionButtons.forEach((button, index) => {
+                button.disabled = true;
+                button.style.opacity = '1';
+                if (index === currentQuestion.answer) {
+                    button.style.background = '#dcfce7';
+                    button.style.borderColor = '#22c55e';
+                    button.style.color = '#14532d';
+                } else if (index === chosenIndex && !isCorrect) {
+                    button.style.background = '#fee2e2';
+                    button.style.borderColor = '#ef4444';
+                    button.style.color = '#7f1d1d';
+                } else {
+                    button.style.background = '#f8fafc';
+                    button.style.borderColor = '#e2e8f0';
+                    button.style.color = '#0f172a';
+                }
+            });
+
+            feedbackEl.innerHTML = `<strong>${currentPlayer.name}:</strong> ${message || ''} ${isCorrect ? explanationText : ''}`;
+            drawSnakeBoard(document.getElementById('snakeBoardCanvas'), state);
+            updateSnakeStatusUI(levelObj, state);
+
+            setTimeout(() => {
+                modal.style.display = 'none';
+
+                const hasWinner = state.players.some(player => player.pos >= 20);
+                if (hasWinner) {
+                    const feedbackBox = document.getElementById('feedbackMessage');
+                    feedbackBox.classList.remove('hidden');
+                    feedbackBox.className = 'correct-feedback-state p-3 rounded-xl text-sm font-medium';
+                    const winnerName = state.players.find(player => player.pos >= 20)?.name || 'Pemain';
+                    feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check mr-2 text-emerald-400"></i> <b>Selamat!</b> ${winnerName} mencapai petak 20 dan menyelesaikan Level 2.`;
+
+                    const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+                    nextQuestionBtn.classList.remove('hidden');
+                    nextQuestionBtn.disabled = false;
+                    nextQuestionBtn.innerHTML = 'Lanjut ke Level 3 <i class="fa-solid fa-arrow-right ml-1"></i>';
+                    nextQuestionBtn.onclick = () => {
+                        userData.currentLevel = 3;
+                        userData.currentQuestionIdx = 0;
+                        showLevelUpNotification(userData.currentLevel, gameLevels[userData.currentLevel - 1].title);
+                        loadQuestion();
+                    };
+                    return;
+                }
+
+                state.currentPlayerIndex = state.currentPlayerIndex === 0 ? 1 : 0;
+                state.isRolling = false;
+                updateSnakeStatusUI(levelObj, state);
+
+                if (state.players[state.currentPlayerIndex].isAI) {
+                    setTimeout(() => {
+                        const rollBtn = document.getElementById('snakeRollBtn');
+                        if (rollBtn) {
+                            rollBtn.disabled = true;
+                        }
+                        let aiRoll = Math.floor(Math.random() * 6) + 1;
+                        state.currentRoll = aiRoll;
+                        state.initialRollPos = state.players[state.currentPlayerIndex].pos;
+                        const nextPos = Math.min(20, state.players[state.currentPlayerIndex].pos + aiRoll);
+                        state.players[state.currentPlayerIndex].pos = nextPos;
+                        drawSnakeBoard(document.getElementById('snakeBoardCanvas'), state);
+                        updateSnakeStatusUI(levelObj, state);
+
+                        const botHasWinner = state.players.some(player => player.pos >= 20);
+                        if (botHasWinner) {
+                            const feedbackBox = document.getElementById('feedbackMessage');
+                            feedbackBox.classList.remove('hidden');
+                            feedbackBox.className = 'correct-feedback-state p-3 rounded-xl text-sm font-medium';
+                            feedbackBox.innerHTML = '<i class="fa-solid fa-circle-check mr-2 text-emerald-400"></i> <b>Bot AI</b> mencapai petak 20 dan level 2 selesai.';
+                            const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+                            nextQuestionBtn.classList.remove('hidden');
+                            nextQuestionBtn.disabled = false;
+                            nextQuestionBtn.innerHTML = 'Lanjut ke Level 3 <i class="fa-solid fa-arrow-right ml-1"></i>';
+                            nextQuestionBtn.onclick = () => {
+                                userData.currentLevel = 3;
+                                userData.currentQuestionIdx = 0;
+                                showLevelUpNotification(userData.currentLevel, gameLevels[userData.currentLevel - 1].title);
+                                loadQuestion();
+                            };
+                            return;
+                        }
+
+                        setTimeout(() => {
+                            showSnakeQuestionModal(levelObj, state);
+                        }, 700);
+                    }, 800);
+                }
+            }, 2000);
+        }
+
+        function renderSnakeLadderLevel(levelObj, optionsContainer, dropZone, feedbackBox, nextQuestionBtn) {
+            const state = levelObj._snakeLadderState || {
+                players: [
+                    { id: 1, name: 'Kamu', pos: 1, color: '#e53935', isAI: false },
+                    { id: 2, name: 'Bot AI', pos: 1, color: '#1e88e5', isAI: true }
+                ],
+                currentPlayerIndex: 0,
+                isRolling: false,
+                currentRoll: 0,
+                initialRollPos: 1,
+                currentQuestion: null
+            };
+            levelObj._snakeLadderState = state;
+
+            optionsContainer.className = 'w-full';
+            optionsContainer.innerHTML = `
+                <div style="display:flex; justify-content:center; margin-bottom:0.75rem;">
+                    <canvas id="snakeBoardCanvas" width="700" height="520" style="width:100%; max-width:700px; height:auto; border-radius:10px; background:#fff8e1; border:2px solid rgba(251,146,60,0.55);"></canvas>
+                </div>
+                <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:0.75rem; margin-top:0.5rem; font-size:0.72rem; color:#e2e8f0;">
+                    <div style="display:flex; align-items:center; gap:0.35rem;"><span style="width:12px; height:12px; border-radius:4px; background:#a5d6a7; display:inline-block;"></span>Batuan Beku</div>
+                    <div style="display:flex; align-items:center; gap:0.35rem;"><span style="width:12px; height:12px; border-radius:4px; background:#fff59d; display:inline-block;"></span>Batuan Sedimen</div>
+                    <div style="display:flex; align-items:center; gap:0.35rem;"><span style="width:12px; height:12px; border-radius:4px; background:#ffcc80; display:inline-block;"></span>Batuan Metamorf</div>
+                </div>
+            `;
+
+            drawSnakeBoard(document.getElementById('snakeBoardCanvas'), state);
+
+            dropZone.className = 'rounded-xl border border-dashed border-amber-400/60 bg-amber-950/30 p-3 text-sm text-amber-100 transition';
+            dropZone.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:0.85rem;">
+                    <div style="display:flex; align-items:center; gap:0.6rem; font-weight:800; font-size:0.9rem;">
+                        <span id="snakeTurnDot" style="display:inline-block; width:16px; height:16px; border-radius:50%; background:#e53935; border:2px solid white;"></span>
+                        <span id="snakeTurnText">Giliran: Kamu</span>
+                    </div>
+
+                    <div style="display:flex; justify-content:center; align-items:center; gap:1rem; margin-top:0.15rem;">
+                        <div id="snakeDiceView" style="width:58px; height:58px; border-radius:12px; background:#f8fafc; border:3px solid #333; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.8rem; color:#0f172a;">-</div>
+                    </div>
+
+                    <button id="snakeRollBtn" type="button" style="width:100%; padding:0.8rem 1rem; border:none; border-radius:10px; background:#16a34a; color:white; font-weight:900; cursor:pointer;">Kocok Dadu</button>
+
+                    <div style="display:flex; flex-direction:column; gap:0.35rem; font-size:0.8rem; color:#e2e8f0;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0; border-bottom:1px solid rgba(148,163,184,0.25);">
+                            <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#e53935; margin-right:0.4rem;"></span>Kamu</span>
+                            <span id="snakeP1Pos">Petak 1</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0; border-bottom:1px solid rgba(148,163,184,0.25);">
+                            <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#1e88e5; margin-right:0.4rem;"></span>Bot AI</span>
+                            <span id="snakeP2Pos">Petak 1</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const rollBtn = document.getElementById('snakeRollBtn');
+            rollBtn.onclick = () => {
+                if (state.isRolling || state.players[state.currentPlayerIndex].isAI) {
+                    return;
+                }
+                state.isRolling = true;
+                rollBtn.disabled = true;
+                let rollCount = 0;
+                const interval = setInterval(() => {
+                    state.currentRoll = Math.floor(Math.random() * 6) + 1;
+                    document.getElementById('snakeDiceView').textContent = state.currentRoll;
+                    rollCount += 1;
+                    if (rollCount >= 10) {
+                        clearInterval(interval);
+                        state.initialRollPos = state.players[state.currentPlayerIndex].pos;
+                        const target = Math.min(20, state.players[state.currentPlayerIndex].pos + state.currentRoll);
+                        state.players[state.currentPlayerIndex].pos = target;
+                        drawSnakeBoard(document.getElementById('snakeBoardCanvas'), state);
+                        updateSnakeStatusUI(levelObj, state);
+                        setTimeout(() => {
+                            showSnakeQuestionModal(levelObj, state);
+                        }, 700);
+                    }
+                }, 80);
+            };
+
+            feedbackBox.classList.remove('hidden');
+            feedbackBox.className = 'p-3 rounded-xl text-sm font-medium bg-cyan-900/50 border border-cyan-600 text-cyan-200';
+            feedbackBox.innerHTML = '<i class="fa-solid fa-circle-info mr-2 text-cyan-300"></i> Lempar dadu untuk bergerak. Tangga naik dan ular menurunkan posisi.';
+            nextQuestionBtn.classList.add('hidden');
+            nextQuestionBtn.disabled = false;
+            nextQuestionBtn.onclick = null;
+            updateSnakeStatusUI(levelObj, state);
+        }
+
+        function processCategorizationDrop(qObj, selectedIdx, categoryIdx, optionsContainer, dropZone, feedbackBox, nextQuestionBtn, syncCategorizationLayout) {
+            qObj._categoryAssignments[selectedIdx] = categoryIdx;
+            feedbackBox.className = "p-3 rounded-xl text-sm font-medium bg-cyan-900/50 border border-cyan-600 text-cyan-200";
+            feedbackBox.innerHTML = `<i class="fa-solid fa-circle-info mr-2 text-cyan-300"></i> Jawaban sudah dimasukkan. Silakan lanjutkan memasukkan pilihan lain sampai semua terisi.`;
+            feedbackBox.classList.remove('hidden');
+
+            const allPlaced = qObj.options.every((_, idx) => qObj._categoryAssignments[idx] !== undefined);
+            if (allPlaced) {
+                feedbackBox.className = "p-3 rounded-xl text-sm font-medium bg-amber-900/50 border border-amber-600 text-amber-200";
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check mr-2 text-amber-300"></i> Semua pilihan sudah dimasukkan. Tekan tombol <b>Cek Jawaban</b> untuk melihat mana yang benar dan mana yang salah.`;
+            }
+
+            syncCategorizationLayout();
+        }
+
+        function evaluateCategorizationQuestion(qObj, optionsContainer, dropZone, feedbackBox, nextQuestionBtn) {
+            const total = qObj.options.length;
+            let correctCount = 0;
+
+            qObj.categories.forEach((category, categoryIndex) => {
+                category.correctIndexes.forEach((correctIndex) => {
+                    const assignedCategory = qObj._categoryAssignments[correctIndex];
+                    if (assignedCategory === categoryIndex) {
+                        correctCount++;
+                    }
+                });
+            });
+
+            qObj._evaluationComplete = true;
+
+            const categoryZones = dropZone.querySelectorAll('.category-zone');
+            categoryZones.forEach((zone) => {
+                const categoryIdx = Number(zone.dataset.categoryIndex);
+                const itemsContainer = zone.querySelector('.category-items');
+                const items = itemsContainer.querySelectorAll('[data-option-index]');
+
+                items.forEach((item) => {
+                    const optionIdx = Number(item.dataset.optionIndex);
+                    const isCorrect = qObj.categories[categoryIdx].correctIndexes.includes(optionIdx);
+                    item.classList.remove('bg-emerald-900/70', 'border-emerald-500/60', 'text-emerald-100', 'category-item', 'correct', 'incorrect');
+                    item.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    item.classList.add('category-item');
+                });
+            });
+
+            const isFullyCorrect = correctCount === total;
+            if (isFullyCorrect) {
+                userData.correctByLevel[userData.currentLevel - 1] += 1;
+                userData.totalCorrectAnswers += 1;
+                if (userData.currentLevel === 2) {
+                    userData.stars += 4;
+                }
+                userData.score += 20;
+                updateProgressHud();
+                feedbackBox.className = "correct-feedback-state p-3 rounded-xl text-sm font-medium";
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check mr-2 text-emerald-400"></i> <b>Semua jawaban benar!</b> ${qObj.explanation}${userData.currentLevel === 2 ? ' <span class="text-amber-300">(+4 bintang)</span>' : ''}`;
+            } else {
+                updateProgressHud();
+                feedbackBox.className = "p-3 rounded-xl text-sm font-medium bg-rose-900/50 border border-rose-600 text-rose-200";
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark mr-2 text-rose-400"></i> <b>Hasil pengecekan:</b> ${correctCount} dari ${total} jawaban benar. Yang berwarna merah adalah jawaban yang salah, dan yang berwarna hijau adalah jawaban yang benar.`;
+            }
+
+            nextQuestionBtn.classList.remove('hidden');
+            nextQuestionBtn.disabled = false;
+            nextQuestionBtn.innerHTML = 'Soal Selanjutnya <i class="fa-solid fa-arrow-right ml-1"></i>';
+            nextQuestionBtn.onclick = nextQuestion;
+        }
+
+        function checkAnswer(selectedIdx, correctIdx, explanation) {
+            const optionsContainer = document.getElementById('optionsContainer');
+            const buttons = optionsContainer.getElementsByTagName('button');
+            const feedbackBox = document.getElementById('feedbackMessage');
+            const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+            const isLevelOne = userData.currentLevel === 1;
+
+            feedbackBox.classList.remove('hidden');
+
+            if (selectedIdx === correctIdx) {
+                for (let b of buttons) {
+                    b.disabled = true;
+                    b.classList.remove('hover:border-emerald-500', 'hover:bg-slate-800/80');
+                }
+
+                buttons[selectedIdx].className = "correct-answer-state w-full text-left p-3.5 rounded-xl text-sm flex items-center justify-between";
+                feedbackBox.className = "correct-feedback-state p-3 rounded-xl text-sm font-medium";
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check mr-2 text-emerald-400"></i> <b>Benar!</b> ${explanation}${userData.currentLevel === 2 ? ' <span class="text-amber-300">(+4 bintang)</span>' : ''}`;
+                const barAvatar = document.getElementById('barAvatar');
+                barAvatar.classList.remove('avatar-celebrate');
+                void barAvatar.offsetWidth;
+                barAvatar.classList.add('avatar-celebrate');
+                userData.correctByLevel[userData.currentLevel - 1]++;
+                userData.totalCorrectAnswers += 1;
+                if (userData.currentLevel === 2) {
+                    userData.stars += 4;
+                }
+                userData.score += 20; // 5 soal x 20 = 100 per level maks
+                updateProgressHud();
+
+                if (isLevelOne) {
+                    nextQuestionBtn.classList.remove('hidden');
+                } else {
+                    nextQuestionBtn.classList.add('hidden');
+                    setTimeout(nextQuestion, 700);
+                }
+            } else {
+                for (let b of buttons) {
+                    b.disabled = true;
+                    b.classList.remove('hover:border-emerald-500', 'hover:bg-slate-800/80');
+                }
+
+                buttons[selectedIdx].className = "w-full text-left p-3.5 rounded-xl bg-rose-950/80 border border-rose-500 text-rose-200 text-sm flex items-center justify-between";
+                buttons[correctIdx].className = "w-full text-left p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-sm flex items-center justify-between";
+                feedbackBox.className = "p-3 rounded-xl text-sm font-medium bg-rose-900/50 border border-rose-600 text-rose-200";
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark mr-2 text-rose-400"></i> <b>Kurang tepat.</b> Jawaban yang benar adalah: ${buttons[correctIdx].innerText}. ${explanation}`;
+                updateProgressHud();
+
+                if (isLevelOne) {
+                    nextQuestionBtn.classList.remove('hidden');
+                } else {
+                    nextQuestionBtn.classList.add('hidden');
+                    setTimeout(nextQuestion, 900);
+                }
+            }
+
+            if (isLevelOne) {
+                const currentLevel = gameLevels[userData.currentLevel - 1];
+                const isLastQuestion = userData.currentQuestionIdx === currentLevel.questions.length - 1;
+                if (isLastQuestion) {
+                    nextQuestionBtn.disabled = true;
+                    nextQuestionBtn.innerHTML = userData.currentLevel < gameLevels.length
+                        ? 'Menuju Level Berikutnya <i class="fa-solid fa-arrow-right ml-1"></i>'
+                        : 'Menyelesaikan Permainan <i class="fa-solid fa-award ml-1"></i>';
+                    setTimeout(nextQuestion, 800);
+                }
+            }
+        }
+
+        function nextQuestion() {
+            userData.currentQuestionIdx++;
+            const currentLvlObj = shuffledGameLevels[userData.currentLevel - 1];
+
+            if (userData.currentQuestionIdx < currentLvlObj.questions.length) {
+                loadQuestion();
+                return;
+            }
+
+            if (userData.currentLevel === 2) {
+                userData.currentLevel = 3;
+                userData.currentQuestionIdx = 0;
+                showLevelUpNotification(userData.currentLevel, gameLevels[userData.currentLevel - 1].title);
+                loadQuestion();
+                return;
+            }
+
+            if (userData.currentLevel < gameLevels.length) {
+                openLevelConfirmModal();
+            } else {
+                goToSlide(7);
+            }
+        }
+
+        // Isi Data Sertifikat (Slide 6)
+        function populateCertificate() {
+            const bestLevelIndex = userData.correctByLevel.reduce((bestIndex, correctCount, index, counts) => {
+                return correctCount > counts[bestIndex] ? index : bestIndex;
+            }, 0);
+            const bestScore = userData.correctByLevel[bestLevelIndex];
+            document.getElementById('certName').innerText = userData.name;
+            document.getElementById('certClass').innerText = userData.classRoom;
+            document.getElementById('certSchool').innerText = userData.school;
+            document.getElementById('certClassFooter').innerText = userData.classRoom;
+            document.getElementById('certSchoolFooter').innerText = userData.school;
+            document.getElementById('certScore').innerText = `${userData.score} / 500`;
+            document.getElementById('certClassification').innerText = expertiseTitles[bestLevelIndex].toUpperCase();
+            document.getElementById('certClassificationDetail').innerText = `${bestScore} jawaban benar pada materi ${gameLevels[bestLevelIndex].title}`;
+        }
+
+        // Cetak PDF / Print Sertifikat
+        function printCertificate() {
+            window.print();
+        }
+
+        // Restart Game
+        function restartGame() {
+            userData.score = 0;
+            userData.stars = 0;
+            userData.totalCorrectAnswers = 0;
+            userData.currentLevel = 1;
+            userData.currentQuestionIdx = 0;
+            userData.correctByLevel = [0, 0, 0, 0, 0];
+            initializeShuffledGameSession();
+            updateProgressHud();
+            goToSlide(1);
+        }
+    </script>
+</body>
+</html>
